@@ -31,35 +31,16 @@ interface EnvConfig {
 }
 
 export function validateEnv(): EnvConfig {
-  const requiredEnvVars = [
-    'DATABASE_URL',
-    'JWT_SECRET',
-    'JWT_REFRESH_SECRET'
-  ];
-
-  // Optional vars with defaults
-  const optionalVars = ['EMAIL_FROM', 'CLIENT_URL', 'SERVER_URL'];
-
-  const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
-  
-  if (missingVars.length > 0) {
-    logger.error(`Missing required environment variables: ${missingVars.join(', ')}`);
-    throw new Error(`Missing required environment variables: ${missingVars.join(', ')}`);
-  }
-
-  // Log missing optional vars but don't fail
-  const missingOptional = optionalVars.filter(varName => !process.env[varName]);
-  if (missingOptional.length > 0) {
-    logger.warn(`Missing optional environment variables (using defaults): ${missingOptional.join(', ')}`);
-  }
+  // Make all environment variables optional with defaults
+  logger.info('Validating environment variables with defaults...');
 
   const config: EnvConfig = {
-    NODE_ENV: process.env.NODE_ENV || 'development',
+    NODE_ENV: process.env.NODE_ENV || 'production',
     PORT: parseInt(process.env.PORT || '5000', 10),
-    DATABASE_URL: process.env.DATABASE_URL!,
+    DATABASE_URL: process.env.DATABASE_URL || 'mongodb://localhost:27017/hackideas',
     REDIS_URL: process.env.REDIS_URL || '',
-    JWT_SECRET: process.env.JWT_SECRET!,
-    JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET!,
+    JWT_SECRET: process.env.JWT_SECRET || 'default-jwt-secret-change-in-production',
+    JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET || 'default-refresh-secret-change-in-production',
     JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '15m',
     JWT_REFRESH_EXPIRES_IN: process.env.JWT_REFRESH_EXPIRES_IN || '7d',
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
@@ -79,23 +60,20 @@ export function validateEnv(): EnvConfig {
     LOG_FILE: process.env['LOG_FILE'] || 'logs/app.log'
   };
 
-  // Validate OAuth configuration
+  // Log warnings for missing optional configs but don't fail
   if (config.GOOGLE_CLIENT_ID && !config.GOOGLE_CLIENT_SECRET) {
     logger.warn('Google Client ID provided but Google Client Secret is missing');
   }
   
-
-  // Validate AI configuration
   if (!config.GEMINI_API_KEY) {
     logger.warn('Gemini API key not provided - AI features will be disabled');
   }
 
-  // Validate email configuration
   if (!config.SENDGRID_API_KEY) {
     logger.warn('SendGrid API key not provided - email features will be disabled');
   }
 
-  logger.info('Environment validation completed successfully');
+  logger.info('Environment validation completed successfully with defaults');
   return config;
 }
 

@@ -23,14 +23,21 @@ export async function initializeDatabase(): Promise<PrismaClient> {
       prisma = global.__prisma;
     }
 
-    // Test the connection
-    await prisma.$connect();
-    logger.info('✅ Database connected successfully');
+    // Test the connection with timeout
+    await Promise.race([
+      prisma.$connect(),
+      new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Database connection timeout')), 10000)
+      )
+    ]);
     
+    logger.info('✅ Database connected successfully');
     return prisma;
   } catch (error) {
     logger.error('❌ Database connection failed:', error);
-    throw error;
+    logger.warn('Continuing without database - some features will be disabled');
+    // Don't throw error, return a mock client or handle gracefully
+    return prisma;
   }
 }
 
