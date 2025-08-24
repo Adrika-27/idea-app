@@ -7,7 +7,7 @@
     "dev": "concurrently \"npm run server:dev\" \"npm run client:dev\"",
     "server:dev": "cd server && npm run dev",
     "client:dev": "cd client && npm run dev",
-    "build": "npm run client:build && npm run server:build",
+    "vercel-build": "cd client && npm install && npm run build",
     "client:build": "cd client && npm run build",
     "server:build": "cd server && npm run build",
     "start": "cd server && npm start",
@@ -15,7 +15,7 @@
     "test": "npm run client:test && npm run server:test",
     "client:test": "cd client && npm test",
     "server:test": "cd server && npm test",
-    "lint": "npm run client:lint && npm run server:lint",
+    "build": "cd client && npm install && npm run build",
     "client:lint": "cd client && npm run lint",
     "server:lint": "cd server && npm run lint"
   },
