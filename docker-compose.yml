@@ -1,0 +1,100 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: hackideas_postgres
+    environment:
+      POSTGRES_DB: hackideas_pro
+      POSTGRES_USER: hackideas_user
+      POSTGRES_PASSWORD: hackideas_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./server/prisma/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - hackideas_network
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: hackideas_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - hackideas_network
+
+  # Backend API
+  api:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: hackideas_api
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://hackideas_user:hackideas_password@postgres:5432/hackideas_pro
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: your-super-secret-jwt-key-change-in-production
+      JWT_REFRESH_SECRET: your-super-secret-refresh-key-change-in-production
+      GOOGLE_CLIENT_ID: your-google-client-id
+      GOOGLE_CLIENT_SECRET: your-google-client-secret
+      GITHUB_CLIENT_ID: your-github-client-id
+      GITHUB_CLIENT_SECRET: your-github-client-secret
+      GEMINI_API_KEY: your-gemini-api-key
+      EMAIL_FROM: noreply@hackideas.com
+      SENDGRID_API_KEY: your-sendgrid-api-key
+      CLIENT_URL: http://localhost:3000
+      PORT: 5000
+    ports:
+      - "5000:5000"
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./server/uploads:/app/uploads
+    networks:
+      - hackideas_network
+
+  # Frontend Client
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: http://localhost:5000
+        VITE_SOCKET_URL: http://localhost:5000
+    container_name: hackideas_client
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+    networks:
+      - hackideas_network
+
+  # Nginx Reverse Proxy (Production)
+  nginx:
+    image: nginx:alpine
+    container_name: hackideas_nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./ssl:/etc/nginx/ssl
+    depends_on:
+      - client
+      - api
+    networks:
+      - hackideas_network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  hackideas_network:
+    driver: bridge

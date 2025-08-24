@@ -1,0 +1,255 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String   @id @default(auto()) @map("_id") @db.ObjectId
+  email             String   @unique
+  username          String   @unique
+  password          String?
+  avatar            String?
+  bio               String?
+  skills            String[]
+  socialLinks       Json?
+  karmaScore        Int      @default(0)
+  emailVerified     Boolean  @default(false)
+  emailVerifyToken  String?
+  resetPasswordToken String?
+  resetPasswordExpires DateTime?
+  isActive          Boolean  @default(true)
+  lastLoginAt       DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // OAuth providers
+  oauthProviders    OAuthProvider[]
+  
+  // Relations
+  ideas             Idea[]
+  votes             Vote[]
+  comments          Comment[]
+  bookmarks         Bookmark[]
+  notifications     Notification[]
+  sessions          Session[]
+  
+  // Following system
+  following         Follow[] @relation("UserFollowing")
+  followers         Follow[] @relation("UserFollowers")
+  
+  // Activity tracking
+  activities        Activity[]
+
+  @@map("users")
+}
+
+model OAuthProvider {
+  id         String @id @default(auto()) @map("_id") @db.ObjectId
+  provider   String // 'google', 'github'
+  providerId String
+  userId     String @db.ObjectId
+  user       User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  @@unique([provider, providerId])
+  @@unique([provider, userId])
+  @@map("oauth_providers")
+}
+
+model Idea {
+  id                    String      @id @default(auto()) @map("_id") @db.ObjectId
+  title                 String
+  description           String
+  content               String
+  category              IdeaCategory
+  tags                  String[]
+  status                IdeaStatus  @default(DRAFT)
+  authorId              String @db.ObjectId
+  author                User        @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  
+  // Engagement metrics
+  voteScore             Int         @default(0)
+  viewCount             Int         @default(0)
+  commentCount          Int         @default(0)
+  
+  // AI enhancement
+  aiEnhancedDescription String?
+  aiTechStack          String[]    @default([])
+  aiComplexity         String?
+  
+  // Media
+  images               String[]    @default([])
+  
+  // Timestamps
+  createdAt            DateTime    @default(now())
+  updatedAt            DateTime    @updatedAt
+  publishedAt          DateTime?
+  
+  // Relations
+  votes                Vote[]
+  comments             Comment[]
+  bookmarks            Bookmark[]
+  activities           Activity[]
+
+  @@map("ideas")
+}
+
+model Vote {
+  id       String   @id @default(auto()) @map("_id") @db.ObjectId
+  type     VoteType
+  userId   String @db.ObjectId
+  ideaId   String? @db.ObjectId
+  commentId String? @db.ObjectId
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  idea     Idea?    @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+  comment  Comment? @relation(fields: [commentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, ideaId])
+  @@unique([userId, commentId])
+  @@map("votes")
+}
+
+model Comment {
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  content         String
+  authorId        String @db.ObjectId
+  ideaId          String @db.ObjectId
+  parentCommentId String? @db.ObjectId
+  voteScore       Int       @default(0)
+  isDeleted       Boolean   @default(false)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  author          User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  idea            Idea      @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+  parentComment   Comment?  @relation("CommentReplies", fields: [parentCommentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  replies         Comment[] @relation("CommentReplies")
+  votes           Vote[]
+  activities      Activity[]
+
+  @@map("comments")
+}
+
+model Bookmark {
+  id       String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId   String @db.ObjectId
+  ideaId   String @db.ObjectId
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  idea     Idea     @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, ideaId])
+  @@map("bookmarks")
+}
+
+model Follow {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  followerId  String @db.ObjectId
+  followingId String @db.ObjectId
+  follower    User     @relation("UserFollowing", fields: [followerId], references: [id], onDelete: Cascade)
+  following   User     @relation("UserFollowers", fields: [followingId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+
+  @@unique([followerId, followingId])
+  @@map("follows")
+}
+
+model Notification {
+  id        String           @id @default(auto()) @map("_id") @db.ObjectId
+  type      NotificationType
+  title     String
+  message   String
+  data      Json?
+  userId    String @db.ObjectId
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  isRead    Boolean          @default(false)
+  createdAt DateTime         @default(now())
+
+  @@map("notifications")
+}
+
+model Session {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  sessionToken String   @unique
+  userId       String @db.ObjectId
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("sessions")
+}
+
+model Activity {
+  id        String       @id @default(auto()) @map("_id") @db.ObjectId
+  type      ActivityType
+  userId    String @db.ObjectId
+  ideaId    String? @db.ObjectId
+  commentId String? @db.ObjectId
+  data      Json?
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  idea      Idea?        @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+  comment   Comment?     @relation(fields: [commentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  createdAt DateTime     @default(now())
+
+  @@map("activities")
+}
+
+// Enums
+enum IdeaCategory {
+  WEB
+  MOBILE
+  AI_ML
+  BLOCKCHAIN
+  IOT
+  GAME_DEV
+  DATA_SCIENCE
+  CYBERSECURITY
+  DEVTOOLS
+  FINTECH
+  HEALTHTECH
+  EDTECH
+  SOCIAL
+  ECOMMERCE
+  PRODUCTIVITY
+  OTHER
+}
+
+enum IdeaStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum VoteType {
+  UP
+  DOWN
+}
+
+enum NotificationType {
+  VOTE
+  COMMENT
+  FOLLOW
+  MENTION
+  IDEA_PUBLISHED
+  SYSTEM
+}
+
+enum ActivityType {
+  IDEA_CREATED
+  IDEA_UPDATED
+  IDEA_PUBLISHED
+  IDEA_VOTED
+  COMMENT_CREATED
+  COMMENT_VOTED
+  USER_FOLLOWED
+  BOOKMARK_ADDED
+}
