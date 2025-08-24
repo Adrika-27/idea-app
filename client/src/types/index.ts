@@ -105,6 +105,10 @@ export interface Comment {
   userVote?: VoteType | null;
   replies?: Comment[];
   replyCount?: number;
+  _count?: {
+    replies: number;
+    votes: number;
+  };
 }
 
 // Notification types
@@ -170,6 +174,9 @@ export interface AuthTokens {
 
 export interface AuthUser extends User {
   tokens?: AuthTokens;
+  isVerified?: boolean;
+  location?: string;
+  website?: string;
 }
 
 export interface LoginCredentials {

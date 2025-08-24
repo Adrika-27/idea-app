@@ -101,7 +101,7 @@ const IdeaDetailPage = () => {
     onSuccess: (data: any) => {
       toast.success(data.message);
     },
-    onSettled: (data, error, ideaId) => {
+    onSettled: (_, __, ideaId) => {
       setIsBookmarking(false);
       queryClient.invalidateQueries({ queryKey: ['idea', ideaId] });
     },

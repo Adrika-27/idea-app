@@ -3,15 +3,13 @@ import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { useAuthStore } from '@/store/authStore';
 import { ideasApi } from '@/api/ideas';
-import { 
-  PlusIcon, 
-  LightBulbIcon, 
-  HeartIcon, 
-  ChatBubbleLeftIcon,
+import {
   EyeIcon,
+  ChatBubbleLeftIcon,
+  HeartIcon,
+  PlusIcon,
   TrophyIcon,
-  CalendarIcon,
-  UserGroupIcon
+  LightBulbIcon,
 } from '@heroicons/react/24/outline';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import IdeaCard from '@/components/ideas/IdeaCard';
@@ -26,16 +24,17 @@ const DashboardPage = () => {
     isLoading: ideasLoading,
   } = useQuery({
     queryKey: ['user-ideas', user?.username],
-    queryFn: () => user ? ideasApi.getUserIdeas(user.username) : Promise.resolve({ ideas: [], pagination: {} }),
+    queryFn: () => user ? ideasApi.getUserIdeas(user.username) : Promise.resolve({ data: [], ideas: [], pagination: { page: 1, limit: 10, total: 0, pages: 0 } }),
     enabled: !!user,
   });
 
   // Mock data for dashboard stats (would come from API)
+  const ideas = userIdeas?.data || userIdeas?.ideas || [];
   const stats = {
-    totalIdeas: userIdeas?.ideas.length || 0,
-    totalVotes: userIdeas?.ideas.reduce((sum, idea) => sum + idea.voteScore, 0) || 0,
-    totalComments: userIdeas?.ideas.reduce((sum, idea) => sum + (idea._count?.comments || 0), 0) || 0,
-    totalViews: userIdeas?.ideas.reduce((sum, idea) => sum + (idea.views || 0), 0) || 0,
+    totalIdeas: ideas.length || 0,
+    totalVotes: ideas.reduce((sum: number, idea: any) => sum + idea.voteScore, 0) || 0,
+    totalComments: ideas.reduce((sum: number, idea: any) => sum + (idea._count?.comments || 0), 0) || 0,
+    totalViews: ideas.reduce((sum: number, idea: any) => sum + (idea.views || 0), 0) || 0,
   };
 
   const recentActivity = [
@@ -174,7 +173,7 @@ const DashboardPage = () => {
                       <div className="flex justify-center py-8">
                         <LoadingSpinner size="lg" />
                       </div>
-                    ) : userIdeas?.ideas.length === 0 ? (
+                    ) : ideas.length === 0 ? (
                       <div className="text-center py-8">
                         <LightBulbIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                         <h3 className="text-lg font-medium text-gray-900 mb-2">No ideas yet</h3>
@@ -187,7 +186,7 @@ const DashboardPage = () => {
                       </div>
                     ) : (
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {userIdeas?.ideas.map((idea) => (
+                        {ideas.slice(0, 5).map((idea: any) => (
                           <IdeaCard key={idea.id} idea={idea} />
                         ))}
                       </div>

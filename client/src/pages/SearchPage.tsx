@@ -205,8 +205,8 @@ const SearchPage = () => {
 
                 <div className="flex items-center gap-4">
                   <select
-                    value={filters.sort}
-                    onChange={(e) => handleFilterChange({ sort: e.target.value })}
+                    value={filters.sort || ''}
+                    onChange={(e) => handleFilterChange({ sort: e.target.value as 'relevance' | 'newest' | 'oldest' | 'popular' | 'trending' })}
                     className="input min-w-[150px]"
                   >
                     {sortOptions.map(option => (

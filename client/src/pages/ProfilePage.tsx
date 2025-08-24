@@ -17,7 +17,6 @@ import {
 } from '@heroicons/react/24/outline';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import IdeaCard from '@/components/ideas/IdeaCard';
-import toast from 'react-hot-toast';
 
 const ProfilePage = () => {
   const { username } = useParams<{ username: string }>();
@@ -151,7 +150,7 @@ const ProfilePage = () => {
                 {user.location && (
                   <span className="flex items-center">
                     <MapPinIcon className="w-4 h-4 mr-1" />
-                    {user.location}
+                    <span className="text-gray-600">{user.location}</span>
                   </span>
                 )}
                 
