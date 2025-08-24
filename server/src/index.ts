@@ -25,12 +25,8 @@ import { initializeSocket } from './config/socket';
 dotenv.config({ path: path.join(__dirname, '../.env') });
 dotenv.config({ path: path.join(__dirname, '../.env.production') });
 
-// Validate environment variables (make it non-blocking)
-try {
-  validateEnv();
-} catch (error) {
-  logger.warn('Environment validation failed, continuing with available vars:', error);
-}
+// Validate environment variables
+validateEnv();
 
 const PORT = process.env.PORT || 5000;
 

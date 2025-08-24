@@ -34,19 +34,23 @@ export function validateEnv(): EnvConfig {
   const requiredEnvVars = [
     'DATABASE_URL',
     'JWT_SECRET',
-    'JWT_REFRESH_SECRET',
-    'EMAIL_FROM',
-    'CLIENT_URL',
-    'SERVER_URL'
+    'JWT_REFRESH_SECRET'
   ];
 
-  // REDIS_URL is optional - skip if not provided
+  // Optional vars with defaults
+  const optionalVars = ['EMAIL_FROM', 'CLIENT_URL', 'SERVER_URL'];
 
   const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
   
   if (missingVars.length > 0) {
     logger.error(`Missing required environment variables: ${missingVars.join(', ')}`);
     throw new Error(`Missing required environment variables: ${missingVars.join(', ')}`);
+  }
+
+  // Log missing optional vars but don't fail
+  const missingOptional = optionalVars.filter(varName => !process.env[varName]);
+  if (missingOptional.length > 0) {
+    logger.warn(`Missing optional environment variables (using defaults): ${missingOptional.join(', ')}`);
   }
 
   const config: EnvConfig = {
@@ -61,10 +65,10 @@ export function validateEnv(): EnvConfig {
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
     GEMINI_API_KEY: process.env.GEMINI_API_KEY,
-    EMAIL_FROM: process.env.EMAIL_FROM!,
+    EMAIL_FROM: process.env.EMAIL_FROM || 'noreply@hackideas.com',
     SENDGRID_API_KEY: process.env['SENDGRID_API_KEY'],
-    CLIENT_URL: process.env['CLIENT_URL']!,
-    SERVER_URL: process.env['SERVER_URL']!,
+    CLIENT_URL: process.env['CLIENT_URL'] || 'https://hackideas-pro.vercel.app',
+    SERVER_URL: process.env['SERVER_URL'] || 'https://ideaapp-new-production.up.railway.app',
     MAX_FILE_SIZE: parseInt(process.env['MAX_FILE_SIZE'] || '5242880', 10),
     UPLOAD_PATH: process.env['UPLOAD_PATH'] || './uploads',
     RATE_LIMIT_WINDOW_MS: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000', 10),
@@ -95,4 +99,5 @@ export function validateEnv(): EnvConfig {
   return config;
 }
 
-export const env = validateEnv();
+// Don't export env to avoid module-level execution
+// Use validateEnv() function directly where needed
