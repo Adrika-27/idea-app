@@ -41,7 +41,7 @@ const CommentItem = ({ comment, ideaId, onUpdate, level = 0 }: CommentItemProps)
   } = useQuery({
     queryKey: ['comment-replies', comment.id],
     queryFn: () => commentsApi.getReplies(comment.id),
-    enabled: showReplies && comment._count?.replies > 0,
+    enabled: showReplies && (comment._count?.replies || 0) > 0,
   });
 
   // Update comment mutation
@@ -167,7 +167,7 @@ const CommentItem = ({ comment, ideaId, onUpdate, level = 0 }: CommentItemProps)
               <div className="flex items-center">
                 <VoteButton
                   ideaId={comment.id}
-                  currentVote={comment.userVote}
+                  currentVote={comment.userVote || null}
                   voteScore={comment.voteScore}
                   size="sm"
                   orientation="horizontal"
@@ -186,7 +186,7 @@ const CommentItem = ({ comment, ideaId, onUpdate, level = 0 }: CommentItemProps)
               )}
 
               {/* Show Replies */}
-              {comment._count?.replies > 0 && (
+              {(comment._count?.replies || 0) > 0 && (
                 <button
                   onClick={() => setShowReplies(!showReplies)}
                   className="text-gray-500 hover:text-gray-700 flex items-center"
@@ -196,7 +196,7 @@ const CommentItem = ({ comment, ideaId, onUpdate, level = 0 }: CommentItemProps)
                   ) : (
                     <ChevronDownIcon className="w-3 h-3 mr-1" />
                   )}
-                  {comment._count.replies} {comment._count.replies === 1 ? 'reply' : 'replies'}
+                  {comment._count?.replies || 0} {(comment._count?.replies || 0) === 1 ? 'reply' : 'replies'}
                 </button>
               )}
 
