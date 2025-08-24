@@ -40,10 +40,7 @@ export function validateEnv(): EnvConfig {
     'SERVER_URL'
   ];
 
-  // REDIS_URL is optional in development
-  if (process.env.NODE_ENV === 'production') {
-    requiredEnvVars.push('REDIS_URL');
-  }
+  // REDIS_URL is optional - skip if not provided
 
   const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
   

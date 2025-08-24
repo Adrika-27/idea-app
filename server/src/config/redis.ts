@@ -1,14 +1,13 @@
 import { createClient, RedisClientType } from 'redis';
 import { logger } from './logger';
 
-let redisClient: RedisClientType;
+let redisClient: RedisClientType | null = null;
 
-export async function initializeRedis(): Promise<RedisClientType | null> {
+export async function initializeRedis(): Promise<void> {
   try {
-    // Skip Redis if URL is not provided
     if (!process.env.REDIS_URL) {
-      logger.info('⚠️ Redis URL not provided, skipping Redis initialization');
-      return null;
+      logger.warn('⚠️ Redis URL not provided, skipping Redis initialization');
+      return;
     }
 
     redisClient = createClient({
@@ -34,16 +33,18 @@ export async function initializeRedis(): Promise<RedisClientType | null> {
       logger.info('Redis client ready');
     });
 
+    redisClient.on('disconnect', () => {
+      logger.warn('⚠️ Redis disconnected');
+    });
+
     await redisClient.connect();
     
     // Test the connection
     await redisClient.ping();
-    
-    return redisClient;
   } catch (error) {
     logger.error('❌ Redis connection failed:', error);
-    logger.info('⚠️ Continuing without Redis (caching disabled)');
-    return null;
+    logger.warn('Continuing without Redis - caching will be disabled');
+    redisClient = null;
   }
 }
 
