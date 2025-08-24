@@ -20,23 +20,6 @@ A full-stack web application for hackathon and project ideas with real-time inte
 - **Security**: JWT, OAuth, rate limiting, input validation
 - **DevOps**: Docker, comprehensive logging, health checks
 
-## 📁 Project Structure
-
-```
-hackideas-pro/
-├── client/          # React frontend
-├── server/          # Express backend
-├── docker-compose.yml
-└── README.md
-```
-
-## 🛠️ Quick Start
-
-### Prerequisites
-- Node.js 18+
-- MongoDB (or MongoDB Atlas)
-- Redis 6+ (optional)
-- Docker (optional)
 
 ### Development Setup
 
@@ -68,12 +51,6 @@ npm run dev
 
 Visit `http://localhost:3000` for the frontend and `http://localhost:5000` for the API.
 
-### Production Deployment
-
-```bash
-# Build and deploy with Docker
-docker-compose up --build -d
-```
 
 ## 📚 API Documentation
 
