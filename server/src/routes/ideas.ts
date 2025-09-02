@@ -31,6 +31,15 @@ router.get('/', optionalAuth, validate([
   query('sort').optional().isIn(['newest', 'oldest', 'popular', 'trending']).withMessage('Invalid sort option')
 ]), asyncHandler(async (req: AuthenticatedRequest, res) => {
   const prisma = getDatabase();
+  
+  // Check if database is available
+  if (!prisma) {
+    return res.status(503).json({
+      success: false,
+      message: 'Database service unavailable'
+    });
+  }
+
   const page = parseInt(req.query.page as string) || 1;
   const limit = parseInt(req.query.limit as string) || 20;
   const offset = (page - 1) * limit;

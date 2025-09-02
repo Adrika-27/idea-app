@@ -33,6 +33,15 @@ const forgotPasswordValidation = [
 // Register
 router.post('/register', strictRateLimiter, validate(registerValidation), asyncHandler(async (req: any, res: any) => {
   const prisma = getDatabase();
+  
+  // Check if database is available
+  if (!prisma) {
+    return res.status(503).json({
+      success: false,
+      message: 'Database service unavailable'
+    });
+  }
+
   const { email, username, password } = req.body;
 
   // Check if user already exists

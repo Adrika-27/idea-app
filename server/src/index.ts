@@ -32,12 +32,21 @@ const PORT = process.env.PORT || 5000;
 
 async function startServer() {
   try {
+    // Validate environment variables first
+    validateEnv();
+    logger.info('Environment validation completed');
+
     // Initialize external services with error handling
     try {
       await initializeDatabase();
       logger.info('Database initialized successfully');
     } catch (error) {
-      logger.error('Database initialization failed, continuing without DB:', error);
+      logger.error('Database initialization failed:', error);
+      if (process.env.NODE_ENV === 'production') {
+        logger.error('Cannot start server without database in production');
+        process.exit(1);
+      }
+      logger.warn('Continuing without database - some features will be disabled');
     }
     
     try {

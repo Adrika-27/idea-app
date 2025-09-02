@@ -12,6 +12,11 @@ export async function initializeDatabase(): Promise<PrismaClient> {
     if (process.env.NODE_ENV === 'production') {
       prisma = new PrismaClient({
         log: ['error', 'warn'],
+        datasources: {
+          db: {
+            url: process.env.DATABASE_URL,
+          },
+        },
       });
     } else {
       // In development, use a global variable to prevent multiple instances
@@ -27,7 +32,7 @@ export async function initializeDatabase(): Promise<PrismaClient> {
     await Promise.race([
       prisma.$connect(),
       new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Database connection timeout')), 10000)
+        setTimeout(() => reject(new Error('Database connection timeout')), 15000)
       )
     ]);
     
@@ -35,8 +40,11 @@ export async function initializeDatabase(): Promise<PrismaClient> {
     return prisma;
   } catch (error) {
     logger.error('❌ Database connection failed:', error);
+    if (process.env.NODE_ENV === 'production') {
+      throw error; // Re-throw in production to fail startup
+    }
     logger.warn('Continuing without database - some features will be disabled');
-    // Don't throw error, return a mock client or handle gracefully
+    // Return a mock client or handle gracefully
     return prisma;
   }
 }
