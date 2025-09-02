@@ -13,11 +13,12 @@ class SocketService {
       return;
     }
 
-    this.socket = io(import.meta.env.VITE_API_URL || 'http://localhost:5000', {
+    this.socket = io(import.meta.env.VITE_SOCKET_URL || import.meta.env.VITE_API_URL || 'http://localhost:5000', {
       auth: {
         token
       },
       transports: ['websocket', 'polling'],
+      withCredentials: true,
       timeout: 20000,
       forceNew: true
     });

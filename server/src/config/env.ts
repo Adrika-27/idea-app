@@ -48,14 +48,14 @@ export function validateEnv(): EnvConfig {
     GEMINI_API_KEY: process.env.GEMINI_API_KEY,
     EMAIL_FROM: process.env.EMAIL_FROM || 'noreply@hackideas.com',
     SENDGRID_API_KEY: process.env['SENDGRID_API_KEY'],
-    CLIENT_URL: process.env['CLIENT_URL'] || 'https://hackideas-pro.vercel.app',
+    CLIENT_URL: process.env['CLIENT_URL'] || 'https://ideaapp-new.vercel.app',
     SERVER_URL: process.env['SERVER_URL'] || 'https://ideaapp-new-production.up.railway.app',
     MAX_FILE_SIZE: parseInt(process.env['MAX_FILE_SIZE'] || '5242880', 10),
     UPLOAD_PATH: process.env['UPLOAD_PATH'] || './uploads',
     RATE_LIMIT_WINDOW_MS: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000', 10),
     RATE_LIMIT_MAX_REQUESTS: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '100', 10),
     BCRYPT_ROUNDS: parseInt(process.env['BCRYPT_ROUNDS'] || '12', 10),
-    CORS_ORIGIN: process.env.CORS_ORIGIN || 'http://localhost:3000',
+    CORS_ORIGIN: process.env.CORS_ORIGIN || 'https://ideaapp-new.vercel.app,http://localhost:3000,http://localhost:5173',
     LOG_LEVEL: process.env['LOG_LEVEL'] || 'info',
     LOG_FILE: process.env['LOG_FILE'] || 'logs/app.log'
   };

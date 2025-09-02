@@ -51,6 +51,6 @@ export const authApi = {
 
   // OAuth URLs
   getGoogleAuthUrl: (): string => {
-    return `${(import.meta as any).env.VITE_API_URL || 'http://localhost:5000'}/api/auth/google`;
+    return `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/google`;
   },
 };

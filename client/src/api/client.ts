@@ -4,8 +4,9 @@ import toast from 'react-hot-toast';
 
 // Create axios instance
 const apiClient: AxiosInstance = axios.create({
-  baseURL: (import.meta as any).env.VITE_API_URL || 'http://localhost:5000',
-  timeout: 10000,
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000',
+  timeout: 30000,
+  withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -42,8 +43,9 @@ apiClient.interceptors.response.use(
       if (tokens?.refreshToken) {
         try {
           const response = await axios.post(
-            `${(import.meta as any).env.VITE_API_URL || 'http://localhost:5000'}/api/auth/refresh`,
-            { refreshToken: tokens.refreshToken }
+            `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/refresh`,
+            { refreshToken: tokens.refreshToken },
+            { withCredentials: true }
           );
 
           const { accessToken, refreshToken } = response.data.tokens;

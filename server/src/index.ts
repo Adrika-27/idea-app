@@ -32,11 +32,20 @@ const PORT = process.env.PORT || 5000;
 
 async function startServer() {
   try {
-    // Initialize external services
-    await initializeDatabase();
-    await initializeRedis();
+    // Initialize external services with error handling
+    try {
+      await initializeDatabase();
+      logger.info('Database initialized successfully');
+    } catch (error) {
+      logger.error('Database initialization failed, continuing without DB:', error);
+    }
     
-    logger.info('Database and Redis initialized successfully');
+    try {
+      await initializeRedis();
+      logger.info('Redis initialized successfully');
+    } catch (error) {
+      logger.error('Redis initialization failed, continuing without Redis:', error);
+    }
 
     // Import routes AFTER database is initialized
     const authRoutes = require('./routes/auth').default;
@@ -53,7 +62,7 @@ async function startServer() {
     const server = createServer(app);
     const allowedOrigins = (process.env.CORS_ORIGIN
       ? process.env.CORS_ORIGIN.split(',').map((s) => s.trim())
-      : ['http://localhost:3000', 'http://localhost:5173', 'http://127.0.0.1:5173']);
+      : ['https://ideaapp-new.vercel.app', 'http://localhost:3000', 'http://localhost:5173', 'http://127.0.0.1:5173']);
 
     const io = new Server(server, {
       cors: {
@@ -77,10 +86,26 @@ async function startServer() {
     }));
     
     app.use(cors({
-      origin: allowedOrigins,
+      origin: function(origin, callback) {
+        // Allow requests with no origin (mobile apps, curl, postman, etc)
+        if (!origin) return callback(null, true);
+        
+        if (allowedOrigins.includes(origin)) {
+          return callback(null, true);
+        }
+        
+        // Allow any subdomain of vercel.app for preview deployments
+        if (origin.endsWith('.vercel.app')) {
+          return callback(null, true);
+        }
+        
+        const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+        return callback(new Error(msg), false);
+      },
       credentials: true,
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-      allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+      allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+      optionsSuccessStatus: 200
     }));
     
     // General middleware
@@ -104,13 +129,22 @@ async function startServer() {
     // Static file serving
     app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
     
-    // Health check endpoint
+    // Health check endpoint - add before other routes
     app.get('/health', (_req: any, res: any) => {
       res.status(200).json({
         status: 'ok',
         timestamp: new Date().toISOString(),
         uptime: process.uptime(),
-        environment: process.env.NODE_ENV
+        environment: process.env.NODE_ENV || 'production'
+      });
+    });
+
+    // Root endpoint
+    app.get('/', (_req: any, res: any) => {
+      res.status(200).json({
+        message: 'HackIdeas Pro API is running',
+        status: 'ok',
+        version: '1.0.0'
       });
     });
     
@@ -149,11 +183,11 @@ async function startServer() {
     app.use(errorHandler);
     
     // Start server
-    server.listen(PORT, () => {
+    server.listen(Number(PORT), '0.0.0.0', () => {
       logger.info(`🚀 Server running on port ${PORT}`);
-      logger.info(`📚 API Documentation: http://localhost:${PORT}/api/docs`);
-      logger.info(`🏥 Health Check: http://localhost:${PORT}/health`);
-      logger.info(`🌍 Environment: ${process.env.NODE_ENV}`);
+      logger.info(`📱 Environment: ${process.env.NODE_ENV || 'production'}`);
+      logger.info(`🌐 CORS origins: ${allowedOrigins.join(', ')}`);
+      logger.info(`✅ Health check available at /health`);
     });
     
     // Graceful shutdown

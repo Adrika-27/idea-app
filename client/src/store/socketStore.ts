@@ -29,11 +29,12 @@ export const useSocketStore = create<SocketState>((set, get) => ({
   typingUsers: new Map(),
 
   connect: (token: string) => {
-    const socketUrl = (import.meta as any).env.VITE_SOCKET_URL || 'http://localhost:5000';
+    const socketUrl = import.meta.env.VITE_SOCKET_URL || import.meta.env.VITE_API_URL || 'http://localhost:5000';
     
     const socket = io(socketUrl, {
       auth: { token },
       transports: ['websocket', 'polling'],
+      withCredentials: true,
     });
 
     socket.on('connect', () => {
