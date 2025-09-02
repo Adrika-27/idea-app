@@ -8,6 +8,16 @@
     "VITE_API_URL": "https://ideaapp-new-production.up.railway.app",
     "VITE_SOCKET_URL": "https://ideaapp-new-production.up.railway.app",
     "VITE_GOOGLE_CLIENT_ID": "278602552282-b91irg70a3b13amcfq8qhorjp1npijr9.apps.googleusercontent.com",
-    "VITE_GITHUB_CLIENT_ID": "your-github-client-id"
-  }
+    "VITE_APP_NAME": "HackIdeas Pro",
+    "VITE_APP_VERSION": "1.0.0",
+    "VITE_ENABLE_AI_FEATURES": "true",
+    "VITE_ENABLE_REAL_TIME": "true",
+    "VITE_ENABLE_ANALYTICS": "true"
+  },
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ]
 }
