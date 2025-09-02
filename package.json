@@ -1,39 +1,12 @@
 {
-  "name": "hackideas-pro",
+  "name": "hackideas-minimal",
   "version": "1.0.0",
-  "description": "Production-ready hackathon and project ideas platform",
-  "main": "index.js",
+  "description": "Minimal server - no dependencies needed",
+  "main": "server/minimal.js",
   "scripts": {
-    "dev": "concurrently \"npm run server:dev\" \"npm run client:dev\"",
-    "server:dev": "cd server && npm run dev",
-    "client:dev": "cd client && npm run dev",
-    "vercel-build": "cd client && npm install && npm run build",
-    "client:build": "cd client && npm run build",
-    "server:build": "cd server && npm run build",
-    "start": "cd server && npm install && npm run build && npx prisma generate && node dist/index.js",
-    "install:all": "npm install && cd client && npm install && cd ../server && npm install",
-    "test": "npm run client:test && npm run server:test",
-    "client:test": "cd client && npm test",
-    "server:test": "cd server && npm test",
-    "build": "cd client && npm install && npm run build",
-    "client:lint": "cd client && npm run lint",
-    "server:lint": "cd server && npm run lint"
+    "start": "node server/minimal.js"
   },
-  "keywords": [
-    "hackathon",
-    "ideas",
-    "collaboration",
-    "react",
-    "nodejs",
-    "postgresql",
-    "real-time"
-  ],
-  "author": "Your Name",
-  "license": "MIT",
-  "devDependencies": {
-    "concurrently": "^8.2.2"
-  },
-  "dependencies": {
-    "socket.io": "^4.8.1"
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
