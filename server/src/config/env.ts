@@ -37,7 +37,7 @@ export function validateEnv(): EnvConfig {
   const config: EnvConfig = {
     NODE_ENV: process.env.NODE_ENV || 'production',
     PORT: parseInt(process.env.PORT || '5000', 10),
-    DATABASE_URL: process.env.DATABASE_URL || 'mongodb://localhost:27017/hackideas',
+    DATABASE_URL: process.env.DATABASE_URL || 'mongodb+srv://adrika_new:adrikanew@cluster0.mb2ligy.mongodb.net/hackideas?retryWrites=true&w=majority&appName=Cluster0',
     REDIS_URL: process.env.REDIS_URL || '',
     JWT_SECRET: process.env.JWT_SECRET || 'default-jwt-secret-change-in-production',
     JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET || 'default-refresh-secret-change-in-production',
