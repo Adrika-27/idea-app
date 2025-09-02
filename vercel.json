@@ -5,8 +5,8 @@
   "installCommand": "npm install",
   "framework": null,
   "env": {
-    "VITE_API_URL": "https://ideaapp-new-production.up.railway.app",
-    "VITE_SOCKET_URL": "https://ideaapp-new-production.up.railway.app",
+    "VITE_API_URL": "https://idea-app-production.up.railway.app",
+    "VITE_SOCKET_URL": "https://idea-app-production.up.railway.app",
     "VITE_GOOGLE_CLIENT_ID": "278602552282-b91irg70a3b13amcfq8qhorjp1npijr9.apps.googleusercontent.com",
     "VITE_APP_NAME": "HackIdeas Pro",
     "VITE_APP_VERSION": "1.0.0",
