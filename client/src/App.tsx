@@ -1,36 +1,36 @@
 import { useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { useAuthStore } from '@/store/authStore';
-import { useSocketStore } from '@/store/socketStore';
-import { authApi } from '@/api/auth';
+import { useAuthStore } from './store/authStore';
+import { useSocketStore } from './store/socketStore';
+import { authApi } from './api/auth';
 import toast from 'react-hot-toast';
 
 // Layout components
-import Layout from '@/components/layout/Layout';
-import AuthLayout from '@/components/layout/AuthLayout';
+import Layout from './components/layout/Layout';
+import AuthLayout from './components/layout/AuthLayout';
 
 // Page components
-import HomePage from '@/pages/HomePage';
-import ExplorePage from '@/pages/ExplorePage';
-import IdeaDetailPage from '@/pages/IdeaDetailPage';
-import CreateIdeaPage from '@/pages/CreateIdeaPage';
-import EditIdeaPage from '@/pages/EditIdeaPage';
-import ProfilePage from '@/pages/ProfilePage';
-import DashboardPage from '@/pages/DashboardPage';
-import SearchPage from '@/pages/SearchPage';
-import NotificationsPage from '@/pages/NotificationsPage';
+import HomePage from './pages/HomePage';
+import ExplorePage from './pages/ExplorePage';
+import IdeaDetailPage from './pages/IdeaDetailPage';
+import CreateIdeaPage from './pages/CreateIdeaPage';
+import EditIdeaPage from './pages/EditIdeaPage';
+import ProfilePage from './pages/ProfilePage';
+import DashboardPage from './pages/DashboardPage';
+import SearchPage from './pages/SearchPage';
+import NotificationsPage from './pages/NotificationsPage';
 
 // Auth pages
-import LoginPage from '@/pages/auth/LoginPage';
-import RegisterPage from '@/pages/auth/RegisterPage';
-import ForgotPasswordPage from '@/pages/auth/ForgotPasswordPage';
-import ResetPasswordPage from '@/pages/auth/ResetPasswordPage';
-import VerifyEmailPage from '@/pages/auth/VerifyEmailPage';
-import AuthCallbackPage from '@/pages/auth/AuthCallbackPage';
+import LoginPage from './pages/auth/LoginPage';
+import RegisterPage from './pages/auth/RegisterPage';
+import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
+import ResetPasswordPage from './pages/auth/ResetPasswordPage';
+import VerifyEmailPage from './pages/auth/VerifyEmailPage';
+import AuthCallbackPage from './pages/auth/AuthCallbackPage';
 
 // Utility components
-import ProtectedRoute from '@/components/auth/ProtectedRoute';
-import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import ProtectedRoute from './components/auth/ProtectedRoute';
+import LoadingSpinner from './components/ui/LoadingSpinner';
 
 function App() {
   const { isAuthenticated, tokens, setUser, logout, setLoading, isLoading } = useAuthStore();

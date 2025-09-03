@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { io, Socket } from 'socket.io-client';
 import { SocketEvents } from '@/types';
-import { queryClient } from '@/main';
+import { queryClient } from '@/main.tsx';
 
 interface SocketState {
   socket: Socket | null;

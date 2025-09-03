@@ -1,5 +1,5 @@
 import apiClient from './client';
-import { AuthUser, LoginCredentials, RegisterCredentials, AuthTokens } from '@/types';
+import { AuthUser, LoginCredentials, RegisterCredentials, AuthTokens } from '../types';
 
 export const authApi = {
   // Register new user

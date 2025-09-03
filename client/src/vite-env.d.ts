@@ -3,11 +3,7 @@
 interface ImportMetaEnv {
   readonly VITE_API_URL: string
   readonly VITE_SOCKET_URL: string
-  readonly VITE_GOOGLE_CLIENT_ID: string
-  readonly VITE_GITHUB_CLIENT_ID: string
-  readonly VITE_APP_NAME: string
-  readonly VITE_APP_VERSION: string
-  readonly VITE_ENVIRONMENT: string
+  // add more env variables as needed
 }
 
 interface ImportMeta {

@@ -28,7 +28,7 @@ dotenv.config({ path: path.join(__dirname, '../.env.production') });
 // Validate environment variables
 validateEnv();
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 8000;
 
 async function startServer() {
   try {
@@ -69,9 +69,7 @@ async function startServer() {
     // Create Express app and server AFTER database initialization
     const app = express();
     const server = createServer(app);
-    const allowedOrigins = (process.env.CORS_ORIGIN
-      ? process.env.CORS_ORIGIN.split(',').map((s) => s.trim())
-      : ['https://ideaapp-new.vercel.app', 'http://localhost:3000', 'http://localhost:5173', 'http://127.0.0.1:5173']);
+    const allowedOrigins = ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002', 'http://localhost:3003', 'http://localhost:3004', 'http://localhost:3005'];
 
     const io = new Server(server, {
       cors: {
