@@ -47,41 +47,44 @@ const Header = () => {
   ];
 
   return (
-    <header className="bg-white shadow-sm border-b border-gray-200">
+    <header className="sticky top-0 z-50 glass-nav backdrop-blur-xl border-b border-neutral-200/20 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <Link to="/" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-r from-primary-600 to-purple-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">HI</span>
+            <Link to="/" className="flex items-center space-x-3 group">
+              <div className="w-10 h-10 bg-gradient-to-br from-primary-500 via-primary-600 to-accent-600 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/25 group-hover:shadow-primary-500/40 transition-all duration-200 group-hover:scale-105">
+                <span className="text-white font-bold text-lg">HI</span>
               </div>
-              <span className="text-xl font-bold gradient-text">HackIdeas Pro</span>
+              <div className="flex flex-col">
+                <span className="text-xl font-bold gradient-text-primary">HackIdeas</span>
+                <span className="text-xs text-neutral-500 -mt-1 tracking-wide">Pro</span>
+              </div>
             </Link>
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex space-x-8">
+          <nav className="hidden md:flex space-x-1">
             {navigation.map((item) => (
               <Link
                 key={item.name}
                 to={item.href}
-                className="flex items-center space-x-1 text-gray-600 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                className="flex items-center space-x-2 text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100/80 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 group"
               >
-                <item.icon className="w-4 h-4" />
+                <item.icon className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
                 <span>{item.name}</span>
               </Link>
             ))}
           </nav>
 
           {/* Right side */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-3">
             {isAuthenticated ? (
               <>
                 {/* Create button */}
                 <Link
                   to="/create"
-                  className="btn btn-primary btn-sm flex items-center space-x-1"
+                  className="btn btn-primary btn-sm flex items-center space-x-2 shadow-lg shadow-primary-500/25 hover:shadow-primary-500/40"
                 >
                   <PlusIcon className="w-4 h-4" />
                   <span className="hidden sm:inline">Create</span>
@@ -90,62 +93,65 @@ const Header = () => {
                 {/* Notifications */}
                 <Link
                   to="/notifications"
-                  className="relative p-2 text-gray-600 hover:text-primary-600 rounded-full hover:bg-gray-100 transition-colors"
+                  className="relative p-2.5 text-neutral-600 hover:text-primary-600 rounded-xl hover:bg-neutral-100/80 transition-all duration-200 group"
                 >
-                  <BellIcon className="w-5 h-5" />
+                  <BellIcon className="w-5 h-5 group-hover:scale-110 transition-transform duration-200" />
                   {/* Notification badge */}
-                  <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                  <span className="absolute top-2 right-2 w-2 h-2 bg-accent-500 rounded-full animate-pulse"></span>
                 </Link>
 
                 {/* User menu */}
                 <Menu as="div" className="relative">
-                  <Menu.Button className="flex items-center space-x-2 p-1 rounded-full hover:bg-gray-100 transition-colors">
+                  <Menu.Button className="flex items-center space-x-3 p-2 rounded-xl hover:bg-neutral-100/80 transition-all duration-200 group">
                     {user?.avatar ? (
                       <img
                         src={user.avatar}
                         alt={user.username}
-                        className="w-8 h-8 rounded-full object-cover"
+                        className="w-8 h-8 rounded-full object-cover ring-2 ring-transparent group-hover:ring-primary-200 transition-all duration-200"
                       />
                     ) : (
-                      <UserCircleIcon className="w-8 h-8 text-gray-400" />
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center text-white text-sm font-semibold ring-2 ring-transparent group-hover:ring-primary-200 transition-all duration-200">
+                        {user?.username?.charAt(0).toUpperCase()}
+                      </div>
                     )}
-                    <span className="hidden sm:inline text-sm font-medium text-gray-700">
+                    <span className="hidden sm:inline text-sm font-medium text-neutral-700 group-hover:text-neutral-900 transition-colors duration-200">
                       {user?.username}
                     </span>
                   </Menu.Button>
 
                   <Transition
                     as={Fragment}
-                    enter="transition ease-out duration-100"
-                    enterFrom="transform opacity-0 scale-95"
-                    enterTo="transform opacity-100 scale-100"
-                    leave="transition ease-in duration-75"
-                    leaveFrom="transform opacity-100 scale-100"
-                    leaveTo="transform opacity-0 scale-95"
+                    enter="transition ease-out duration-200"
+                    enterFrom="transform opacity-0 scale-95 translate-y-1"
+                    enterTo="transform opacity-100 scale-100 translate-y-0"
+                    leave="transition ease-in duration-150"
+                    leaveFrom="transform opacity-100 scale-100 translate-y-0"
+                    leaveTo="transform opacity-0 scale-95 translate-y-1"
                   >
-                    <Menu.Items className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50">
-                      <div className="py-1">
+                    <Menu.Items className="absolute right-0 mt-3 w-56 bg-white/90 backdrop-blur-xl rounded-2xl shadow-xl border border-neutral-200/50 focus:outline-none z-50 overflow-hidden">
+                      <div className="py-2">
                         {userNavigation.map((item) => (
                           <Menu.Item key={item.name}>
                             {({ active }) => (
                               <Link
                                 to={item.href}
                                 className={`${
-                                  active ? 'bg-gray-100' : ''
-                                } block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100`}
+                                  active ? 'bg-neutral-100/80 text-neutral-900' : 'text-neutral-700'
+                                } flex items-center px-4 py-3 text-sm font-medium transition-all duration-200 hover:bg-neutral-100/80`}
                               >
                                 {item.name}
                               </Link>
                             )}
                           </Menu.Item>
                         ))}
+                        <div className="border-t border-neutral-200/50 my-1"></div>
                         <Menu.Item>
                           {({ active }) => (
                             <button
                               onClick={handleLogout}
                               className={`${
-                                active ? 'bg-gray-100' : ''
-                              } block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100`}
+                                active ? 'bg-error-50 text-error-700' : 'text-neutral-700'
+                              } flex items-center w-full px-4 py-3 text-sm font-medium transition-all duration-200 hover:bg-error-50 hover:text-error-700`}
                             >
                               Sign out
                             </button>
@@ -157,16 +163,16 @@ const Header = () => {
                 </Menu>
               </>
             ) : (
-              <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-3">
                 <Link
                   to="/auth/login"
-                  className="text-gray-600 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                  className="text-neutral-600 hover:text-neutral-900 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 hover:bg-neutral-100/80"
                 >
                   Sign in
                 </Link>
                 <Link
                   to="/auth/register"
-                  className="btn btn-primary btn-sm"
+                  className="btn btn-primary btn-sm shadow-lg shadow-primary-500/25 hover:shadow-primary-500/40"
                 >
                   Sign up
                 </Link>
@@ -176,7 +182,7 @@ const Header = () => {
             {/* Mobile menu button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden p-2 rounded-md text-gray-600 hover:text-primary-600 hover:bg-gray-100 transition-colors"
+              className="md:hidden p-2.5 rounded-xl text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100/80 transition-all duration-200"
             >
               {isMobileMenuOpen ? (
                 <XMarkIcon className="w-5 h-5" />
@@ -189,13 +195,13 @@ const Header = () => {
 
         {/* Mobile menu */}
         {isMobileMenuOpen && (
-          <div className="md:hidden border-t border-gray-200 py-4">
-            <div className="space-y-1">
+          <div className="md:hidden border-t border-neutral-200/50 bg-white/90 backdrop-blur-xl">
+            <div className="px-4 py-6 space-y-2">
               {navigation.map((item) => (
                 <Link
                   key={item.name}
                   to={item.href}
-                  className="flex items-center space-x-2 text-gray-600 hover:text-primary-600 hover:bg-gray-100 px-3 py-2 rounded-md text-base font-medium transition-colors"
+                  className="flex items-center space-x-3 text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100/80 px-4 py-3 rounded-xl text-base font-medium transition-all duration-200"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   <item.icon className="w-5 h-5" />
@@ -205,12 +211,12 @@ const Header = () => {
               
               {isAuthenticated && (
                 <>
-                  <div className="border-t border-gray-200 my-2"></div>
+                  <div className="border-t border-neutral-200/50 my-4"></div>
                   {userNavigation.map((item) => (
                     <Link
                       key={item.name}
                       to={item.href}
-                      className="block text-gray-600 hover:text-primary-600 hover:bg-gray-100 px-3 py-2 rounded-md text-base font-medium transition-colors"
+                      className="block text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100/80 px-4 py-3 rounded-xl text-base font-medium transition-all duration-200"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       {item.name}

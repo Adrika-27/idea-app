@@ -355,9 +355,7 @@ router.get('/me', authenticateJWT as any, asyncHandler(async (req: any, res: any
       updatedAt: true,
       _count: {
         select: {
-          ideas: true,
-          followers: true,
-          following: true
+          ideas: true
         }
       }
     }

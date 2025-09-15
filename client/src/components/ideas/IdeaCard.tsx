@@ -27,32 +27,32 @@ const IdeaCard = ({ idea, showActions = true }: IdeaCardProps) => {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+    <div className="card card-interactive bg-white border border-neutral-200 hover:border-neutral-300 hover:shadow-lg hover:shadow-neutral-900/10 transition-all duration-300">
       {/* Header */}
       <div className="p-6 pb-4">
-        <div className="flex items-start justify-between mb-3">
-          <div className="flex items-center space-x-3">
+        <div className="flex items-start justify-between mb-4">
+          <div className="flex items-center space-x-3 flex-1">
             {idea.author.avatar ? (
               <img
                 src={idea.author.avatar}
                 alt={idea.author.username}
-                className="w-10 h-10 rounded-full object-cover"
+                className="avatar avatar-md object-cover ring-2 ring-transparent hover:ring-primary-200 transition-all duration-200"
               />
             ) : (
-              <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-                <span className="text-sm font-medium text-gray-600">
-                  {idea.author.username.charAt(0).toUpperCase()}
-                </span>
+              <div className="avatar avatar-md bg-gradient-to-br from-primary-500 to-accent-500 text-white font-semibold">
+                {idea.author.username.charAt(0).toUpperCase()}
               </div>
             )}
-            <div>
-              <Link
-                to={`/users/${idea.author.username}`}
-                className="font-medium text-gray-900 hover:text-primary-600"
-              >
-                {idea.author.username}
-              </Link>
-              <p className="text-sm text-gray-500">
+            <div className="flex-1">
+              <div className="flex items-center gap-2">
+                <Link
+                  to={`/users/${idea.author.username}`}
+                  className="font-semibold text-neutral-900 hover:text-primary-600 transition-colors duration-200"
+                >
+                  {idea.author.username}
+                </Link>
+              </div>
+              <p className="text-sm text-neutral-500">
                 {formatDistanceToNow(new Date(idea.createdAt), { addSuffix: true })}
               </p>
             </div>
@@ -65,28 +65,28 @@ const IdeaCard = ({ idea, showActions = true }: IdeaCardProps) => {
 
         {/* Title and Description */}
         <Link to={`/ideas/${idea.id}`} className="block group">
-          <h3 className="text-lg font-semibold text-gray-900 group-hover:text-primary-600 mb-2 transition-colors">
+          <h3 className="heading-3 group-hover:text-primary-600 mb-3 transition-colors duration-200 line-clamp-2">
             {idea.title}
           </h3>
-          <p className="text-gray-600 text-sm leading-relaxed">
+          <p className="body-base text-neutral-600 line-clamp-3 mb-4">
             {truncateText(idea.description, 150)}
           </p>
         </Link>
 
         {/* Tags */}
         {idea.tags && idea.tags.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-3">
+          <div className="flex flex-wrap gap-2 mb-4">
             {idea.tags.slice(0, 3).map((tag, index) => (
               <span
                 key={index}
-                className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-700"
+                className="badge badge-secondary text-xs"
               >
                 <TagIcon className="w-3 h-3 mr-1" />
                 {tag}
               </span>
             ))}
             {idea.tags.length > 3 && (
-              <span className="text-xs text-gray-500">
+              <span className="text-xs text-neutral-500 font-medium">
                 +{idea.tags.length - 3} more
               </span>
             )}
@@ -95,21 +95,21 @@ const IdeaCard = ({ idea, showActions = true }: IdeaCardProps) => {
       </div>
 
       {/* Footer */}
-      <div className="px-6 py-4 bg-gray-50 rounded-b-lg">
-        <div className="flex items-center justify-between">
+      <div className="card-footer bg-neutral-50/50 rounded-b-2xl">
+        <div className="flex items-center justify-between w-full">
           {/* Stats */}
-          <div className="flex items-center space-x-4 text-sm text-gray-500">
-            <div className="flex items-center space-x-1">
+          <div className="flex items-center space-x-6 text-sm text-neutral-500">
+            <div className="flex items-center space-x-1.5 hover:text-primary-600 transition-colors duration-200">
               <HeartIcon className="w-4 h-4" />
-              <span>{idea.voteScore}</span>
+              <span className="font-medium">{idea.voteScore}</span>
             </div>
-            <div className="flex items-center space-x-1">
+            <div className="flex items-center space-x-1.5 hover:text-primary-600 transition-colors duration-200">
               <ChatBubbleLeftIcon className="w-4 h-4" />
-              <span>{idea.counts?.comments ?? idea._count?.comments ?? idea.commentCount ?? 0}</span>
+              <span className="font-medium">{idea.counts?.comments ?? idea._count?.comments ?? idea.commentCount ?? 0}</span>
             </div>
-            <div className="flex items-center space-x-1">
+            <div className="flex items-center space-x-1.5 hover:text-primary-600 transition-colors duration-200">
               <EyeIcon className="w-4 h-4" />
-              <span>{idea.viewCount ?? idea.views ?? 0}</span>
+              <span className="font-medium">{idea.views ?? 0}</span>
             </div>
           </div>
 
@@ -124,10 +124,10 @@ const IdeaCard = ({ idea, showActions = true }: IdeaCardProps) => {
               />
               
               <button
-                className={`p-2 rounded-md transition-colors ${
+                className={`p-2.5 rounded-xl transition-all duration-200 hover:scale-110 ${
                   idea.isBookmarked
-                    ? 'text-primary-600 hover:text-primary-700'
-                    : 'text-gray-400 hover:text-gray-600'
+                    ? 'text-primary-600 hover:text-primary-700 bg-primary-50'
+                    : 'text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100'
                 }`}
                 title={idea.isBookmarked ? 'Remove bookmark' : 'Bookmark idea'}
               >

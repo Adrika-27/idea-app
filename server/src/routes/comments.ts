@@ -33,23 +33,16 @@ router.get('/', validate([
     throw new CustomError('Idea not found', 404);
   }
 
-  let orderBy: any = {};
-  switch (sort) {
-    case 'newest':
-      orderBy = { createdAt: 'desc' };
-      break;
-    case 'oldest':
-      orderBy = { createdAt: 'asc' };
-      break;
-    default: // top
-      orderBy = { voteScore: 'desc' };
-  }
+  // Always sort by newest first for reliability
+  let orderBy: any = { createdAt: 'desc' };
+
+  // Log the query parameters for debugging
+  logger.info(`[API] Getting comments for idea ${ideaId}, page ${page}, limit ${limit}, sort ${sort}`);
 
   const [comments, total] = await Promise.all([
     prisma.comment.findMany({
       where: {
         ideaId: ideaId as string,
-        parentCommentId: null, // Only top-level comments
         isDeleted: false
       },
       orderBy,
@@ -99,11 +92,26 @@ router.get('/', validate([
     prisma.comment.count({
       where: {
         ideaId: ideaId as string,
-        parentCommentId: null,
         isDeleted: false
       }
     })
   ]);
+
+  // Log returned comments for debugging
+  logger.info(`[API] Query executed - Found ${comments.length} comments for idea ${ideaId}, total in DB: ${total}`);
+  
+  // Debug: Log all comments in database for this idea (without filters)
+  const allCommentsForIdea = await prisma.comment.findMany({
+    where: { ideaId: ideaId as string },
+    select: { id: true, content: true, isDeleted: true, parentCommentId: true, createdAt: true }
+  });
+  logger.info(`[API] All comments in DB for idea ${ideaId}:`, JSON.stringify(allCommentsForIdea, null, 2));
+  
+  if (comments.length === 0) {
+    logger.warn(`[API] No comments found for idea ${ideaId}. Check DB and query logic.`);
+  } else {
+    logger.debug(`[API] Comments found: ${comments.map(c => `${c.id} by ${c.author.username}`).join(', ')}`);
+  }
 
   const formattedComments = comments.map(comment => ({
     ...comment,
@@ -253,6 +261,7 @@ router.post('/', authenticateJWT, validate([
     }
   });
 
+
   // Emit real-time update
   const io = req.app.get('io');
   if (io) {
@@ -263,7 +272,14 @@ router.post('/', authenticateJWT, validate([
       replies: [],
       votes: []
     };
-    io.broadcastToIdea(ideaId, 'comment:added', { comment: payload });
+    if (parentCommentId) {
+      io.broadcastToIdea(ideaId, 'comment:reply_added', {
+        reply: payload,
+        parentCommentId
+      });
+    } else {
+      io.broadcastToIdea(ideaId, 'comment:added', { comment: payload });
+    }
   }
 
   logger.info(`New comment created by ${req.user!.username} on idea ${ideaId}`);
@@ -290,7 +306,7 @@ router.put('/:id', authenticateJWT, validate([
 
   const existingComment = await prisma.comment.findUnique({
     where: { id },
-    select: { id: true, authorId: true, isDeleted: true }
+    select: { id: true, authorId: true, isDeleted: true, ideaId: true }
   });
 
   if (!existingComment) {
@@ -316,9 +332,29 @@ router.put('/:id', authenticateJWT, validate([
           avatar: true,
           karmaScore: true
         }
+      },
+      _count: {
+        select: {
+          replies: {
+            where: { isDeleted: false }
+          }
+        }
       }
     }
   });
+
+  // Emit real-time update for comment edit
+  const io = req.app.get('io');
+  if (io) {
+    const payload = {
+      ...comment,
+      userVote: null,
+      replyCount: comment._count.replies,
+      replies: [],
+      votes: []
+    };
+    io.broadcastToIdea(existingComment.ideaId, 'comment:updated', { comment: payload });
+  }
 
   res.json({
     message: 'Comment updated successfully',
@@ -365,6 +401,12 @@ router.delete('/:id', authenticateJWT, validate([
     where: { id: comment.ideaId },
     data: { commentCount: { decrement: 1 } }
   });
+
+  // Emit real-time update for comment deletion
+  const io = req.app.get('io');
+  if (io) {
+    io.broadcastToIdea(comment.ideaId, 'comment:deleted', { commentId: id });
+  }
 
   res.json({
     message: 'Comment deleted successfully'

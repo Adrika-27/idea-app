@@ -14,7 +14,7 @@ interface CommentSectionProps {
 
 const CommentSection = ({ ideaId }: CommentSectionProps) => {
   const { isAuthenticated } = useAuthStore();
-  const { socket, joinIdea, leaveIdea } = useSocketStore();
+  const { joinIdea, leaveIdea } = useSocketStore();
   const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'top'>('newest');
 
   const {
@@ -25,30 +25,26 @@ const CommentSection = ({ ideaId }: CommentSectionProps) => {
   } = useQuery({
     queryKey: ['comments', ideaId, sortBy],
     queryFn: () => commentsApi.getComments(ideaId, { sort: sortBy }),
-    staleTime: 2 * 60 * 1000, // 2 minutes
+    staleTime: 0, // Disable caching to always fetch fresh data
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
   });
 
-  // Join idea room and listen for real-time new comments
+  // Debug: log comments data received from API
+  if (commentsData) {
+    console.log('[API] commentsData.comments:', commentsData.comments);
+    console.log('[API] commentsData.pagination:', commentsData.pagination);
+    console.log('[API] commentsData full object:', JSON.stringify(commentsData, null, 2));
+  }
+
+  // Join idea room for real-time updates
   useEffect(() => {
     joinIdea(ideaId);
-
-    const handleNewComment = (payload: any) => {
-      // Server emits { comment: {...} }
-      const newComment = payload?.comment;
-      if (!newComment) return;
-      // Only refetch for the active idea
-      if (newComment.ideaId === ideaId) {
-        refetch();
-      }
-    };
-
-    socket?.on('comment:new', handleNewComment);
-
+    
     return () => {
-      socket?.off('comment:new', handleNewComment);
       leaveIdea(ideaId);
     };
-  }, [ideaId, socket, joinIdea, leaveIdea, refetch]);
+  }, [ideaId, joinIdea, leaveIdea]);
 
   const sortOptions = [
     { value: 'newest', label: 'Newest' },
@@ -111,7 +107,7 @@ const CommentSection = ({ ideaId }: CommentSectionProps) => {
               Try Again
             </button>
           </div>
-        ) : commentsData?.comments.length === 0 ? (
+        ) : commentsData?.comments?.length === 0 ? (
           <div className="text-center py-8">
             <ChatBubbleLeftIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
             <h4 className="text-lg font-medium text-gray-900 mb-2">No comments yet</h4>
@@ -120,7 +116,7 @@ const CommentSection = ({ ideaId }: CommentSectionProps) => {
             </p>
           </div>
         ) : (
-          commentsData?.comments.map((comment) => (
+          commentsData?.comments?.map((comment) => (
             <CommentItem
               key={comment.id}
               comment={comment}

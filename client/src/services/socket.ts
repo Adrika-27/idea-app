@@ -2,6 +2,18 @@ import { io, Socket } from 'socket.io-client';
 import { useAuthStore } from '../store/authStore';
 
 class SocketService {
+  // Reply events
+  onReplyAdded(callback: (data: any) => void) {
+    if (this.socket) {
+      this.socket.on('comment:reply_added', callback);
+    }
+  }
+
+  offReplyAdded(callback?: (data: any) => void) {
+    if (this.socket) {
+      this.socket.off('comment:reply_added', callback);
+    }
+  }
   private socket: Socket | null = null;
   private reconnectAttempts = 0;
   private maxReconnectAttempts = 5;

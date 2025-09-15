@@ -40,10 +40,6 @@ model User {
   notifications     Notification[]
   sessions          Session[]
   
-  // Following system
-  following         Follow[] @relation("UserFollowing")
-  followers         Follow[] @relation("UserFollowers")
-  
   // Activity tracking
   activities        Activity[]
 
@@ -148,18 +144,6 @@ model Bookmark {
 
   @@unique([userId, ideaId])
   @@map("bookmarks")
-}
-
-model Follow {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  followerId  String @db.ObjectId
-  followingId String @db.ObjectId
-  follower    User     @relation("UserFollowing", fields: [followerId], references: [id], onDelete: Cascade)
-  following   User     @relation("UserFollowers", fields: [followingId], references: [id], onDelete: Cascade)
-  createdAt   DateTime @default(now())
-
-  @@unique([followerId, followingId])
-  @@map("follows")
 }
 
 model Notification {

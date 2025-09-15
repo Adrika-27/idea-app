@@ -77,9 +77,46 @@ export const useSocketStore = create<SocketState>((set, get) => ({
       queryClient.invalidateQueries({ queryKey: ['comments', comment.ideaId] });
     });
 
+    socket.on('comment:reply_added', ({ reply }: any) => {
+      console.log('New reply received:', reply);
+      queryClient.invalidateQueries({ queryKey: ['comments', reply.ideaId] });
+    });
+
+    socket.on('comment:updated', ({ comment }: any) => {
+      console.log('Comment updated:', comment);
+      queryClient.invalidateQueries({ queryKey: ['comments', comment.ideaId] });
+    });
+
+    socket.on('comment:deleted', ({ commentId }: any) => {
+      console.log('Comment deleted:', commentId);
+      // Invalidate all comment queries to refresh the list
+      queryClient.invalidateQueries({ queryKey: ['comments'] });
+    });
+
     socket.on('idea:new', ({ idea }: SocketEvents['idea:new']) => {
       console.log('New idea received:', idea);
       queryClient.invalidateQueries({ queryKey: ['ideas'] });
+    });
+
+    socket.on('idea:updated', ({ idea }: SocketEvents['idea:updated']) => {
+      console.log('Idea updated:', idea);
+      queryClient.invalidateQueries({ queryKey: ['ideas'] });
+      queryClient.invalidateQueries({ queryKey: ['user-ideas'] });
+      queryClient.invalidateQueries({ queryKey: ['idea', idea.id] });
+      // Show toast notification for real-time update
+      import('react-hot-toast').then(({ default: toast }) => {
+        toast.success(`"${idea.title}" was updated`);
+      });
+    });
+
+    socket.on('idea:deleted', ({ ideaId, title }: SocketEvents['idea:deleted']) => {
+      console.log('Idea deleted:', { ideaId, title });
+      queryClient.invalidateQueries({ queryKey: ['ideas'] });
+      queryClient.invalidateQueries({ queryKey: ['user-ideas'] });
+      // Show toast notification for real-time deletion
+      import('react-hot-toast').then(({ default: toast }) => {
+        toast.success(`"${title}" was deleted`);
+      });
     });
 
     socket.on('comment:vote_updated', ({ ideaId, commentId, voteScore }: SocketEvents['comment:vote_updated']) => {

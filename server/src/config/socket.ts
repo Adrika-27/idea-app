@@ -75,6 +75,18 @@ export function initializeSocket(io: Server): void {
       });
     });
 
+      // Handle real-time replies
+      socket.on('comment:reply', (data: { ideaId: string; parentCommentId: string; commentId: string; content: string }) => {
+        socket.to(`idea:${data.ideaId}`).emit('comment:reply_added', {
+          ideaId: data.ideaId,
+          parentCommentId: data.parentCommentId,
+          commentId: data.commentId,
+          author: socket.user,
+          content: data.content,
+          timestamp: new Date().toISOString()
+        });
+      });
+
     // Handle typing indicators
     socket.on('typing:start', (data: { ideaId: string }) => {
       socket.to(`idea:${data.ideaId}`).emit('user:typing', {

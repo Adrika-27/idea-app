@@ -29,9 +29,7 @@ router.get('/:username', optionalAuth, validate([
       createdAt: true,
       _count: {
         select: {
-          ideas: { where: { status: 'PUBLISHED' } },
-          followers: true,
-          following: true
+          ideas: { where: { status: 'PUBLISHED' } }
         }
       }
     }
@@ -41,24 +39,9 @@ router.get('/:username', optionalAuth, validate([
     throw new CustomError('User not found', 404);
   }
 
-  // Check if current user is following this user
-  let isFollowing = false;
-  if (req.user && req.user.id !== user.id) {
-    const follow = await prisma.follow.findUnique({
-      where: {
-        followerId_followingId: {
-          followerId: req.user.id,
-          followingId: user.id
-        }
-      }
-    });
-    isFollowing = !!follow;
-  }
-
   res.json({
     user: {
       ...user,
-      isFollowing,
       isOwnProfile: req.user?.id === user.id
     }
   });

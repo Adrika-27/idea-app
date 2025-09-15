@@ -342,6 +342,12 @@ router.put('/:id', authenticateJWT, validate([
 
   logger.info(`Idea updated: ${idea.title} by ${req.user!.username}`);
 
+  // Emit socket event for idea update
+  const io = req.app.get('io');
+  if (io) {
+    io.emit('idea:updated', { idea });
+  }
+
   res.json({
     message: 'Idea updated successfully',
     idea
@@ -374,6 +380,12 @@ router.delete('/:id', authenticateJWT, validate([
   });
 
   logger.info(`Idea deleted: ${idea.title} by ${req.user!.username}`);
+
+  // Emit socket event for idea deletion
+  const io = req.app.get('io');
+  if (io) {
+    io.emit('idea:deleted', { ideaId: id, title: idea.title });
+  }
 
   res.json({
     message: 'Idea deleted successfully'

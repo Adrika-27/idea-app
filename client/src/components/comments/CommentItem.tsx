@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { socketService } from '../../services/socket';
+import { useEffect } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { formatDistanceToNow } from 'date-fns';
 import { commentsApi } from '@/api/comments';
@@ -12,7 +14,7 @@ import {
   TrashIcon,
   UserIcon
 } from '@heroicons/react/24/outline';
-import VoteButton from '@/components/ideas/VoteButton';
+import CommentVoteButton from './CommentVoteButton';
 import CommentForm from './CommentForm';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import toast from 'react-hot-toast';
@@ -25,6 +27,19 @@ interface CommentItemProps {
 }
 
 const CommentItem = ({ comment, ideaId, onUpdate, level = 0 }: CommentItemProps) => {
+  // Import socketService
+  // Real-time reply handler
+  useEffect(() => {
+    const handleReplyAdded = (payload: any) => {
+      if (payload?.parentCommentId === comment.id) {
+        onUpdate();
+      }
+    };
+    socketService.onReplyAdded(handleReplyAdded);
+    return () => {
+      socketService.offReplyAdded(handleReplyAdded);
+    };
+  }, [comment.id, onUpdate]);
   const { user, isAuthenticated } = useAuthStore();
   const [showReplies, setShowReplies] = useState(false);
   const [showReplyForm, setShowReplyForm] = useState(false);
@@ -59,13 +74,18 @@ const CommentItem = ({ comment, ideaId, onUpdate, level = 0 }: CommentItemProps)
 
   // Delete comment mutation
   const deleteMutation = useMutation({
-    mutationFn: () => commentsApi.deleteComment(comment.id),
-    onSuccess: () => {
+    mutationFn: () => {
+      console.log('[Delete] Attempting to delete comment:', comment.id);
+      return commentsApi.deleteComment(comment.id);
+    },
+    onSuccess: (result) => {
+      console.log('[Delete] Comment deleted successfully:', result);
       onUpdate();
       toast.success('Comment deleted successfully');
     },
-    onError: () => {
-      toast.error('Failed to delete comment');
+    onError: (error: any) => {
+      console.error('[Delete] Failed to delete comment:', error);
+      toast.error(error.response?.data?.message || 'Failed to delete comment');
     },
   });
 
@@ -74,8 +94,16 @@ const CommentItem = ({ comment, ideaId, onUpdate, level = 0 }: CommentItemProps)
   };
 
   const handleDelete = () => {
+    console.log('[Delete] Delete button clicked for comment:', comment.id);
+    console.log('[Delete] Is owner?', isOwner);
+    console.log('[Delete] User ID:', user?.id);
+    console.log('[Delete] Comment author ID:', comment.author.id);
+    
     if (window.confirm('Are you sure you want to delete this comment?')) {
+      console.log('[Delete] User confirmed deletion');
       deleteMutation.mutate();
+    } else {
+      console.log('[Delete] User cancelled deletion');
     }
   };
 
@@ -165,8 +193,9 @@ const CommentItem = ({ comment, ideaId, onUpdate, level = 0 }: CommentItemProps)
             <div className="flex items-center space-x-4 text-xs">
               {/* Vote */}
               <div className="flex items-center">
-                <VoteButton
-                  ideaId={comment.id}
+                <CommentVoteButton
+                  ideaId={ideaId}
+                  commentId={comment.id}
                   currentVote={comment.userVote || null}
                   voteScore={comment.voteScore}
                   size="sm"
@@ -213,10 +242,12 @@ const CommentItem = ({ comment, ideaId, onUpdate, level = 0 }: CommentItemProps)
                   <button
                     onClick={handleDelete}
                     disabled={deleteMutation.isPending}
-                    className="text-gray-500 hover:text-red-600 flex items-center"
+                    className={`text-gray-500 hover:text-red-600 flex items-center ${
+                      deleteMutation.isPending ? 'opacity-50 cursor-not-allowed' : ''
+                    }`}
                   >
                     <TrashIcon className="w-3 h-3 mr-1" />
-                    Delete
+                    {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
                   </button>
                 </>
               )}

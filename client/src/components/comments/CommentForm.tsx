@@ -47,8 +47,9 @@ const CommentForm = ({
 
   const commentMutation = useMutation({
     mutationFn: (data: CommentFormData) => 
-      commentsApi.createComment(ideaId, { ...data, parentId }),
-    onSuccess: () => {
+      commentsApi.createComment(ideaId, { ...data, parentCommentId: parentId }),
+    onSuccess: (result) => {
+      console.log('[CommentForm] Comment created successfully:', result);
       reset();
       setIsExpanded(false);
       onCommentAdded();
@@ -56,6 +57,7 @@ const CommentForm = ({
       if (onCancel) onCancel();
     },
     onError: (error: any) => {
+      console.error('[CommentForm] Failed to create comment:', error);
       toast.error(error.response?.data?.message || 'Failed to add comment');
     },
   });

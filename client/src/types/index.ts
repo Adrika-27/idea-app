@@ -14,10 +14,7 @@ export interface User {
   updatedAt: string;
   _count?: {
     ideas: number;
-    followers: number;
-    following: number;
   };
-  isFollowing?: boolean;
   isOwnProfile?: boolean;
 }
 
@@ -126,7 +123,6 @@ export interface Notification {
 export enum NotificationType {
   VOTE = 'VOTE',
   COMMENT = 'COMMENT',
-  FOLLOW = 'FOLLOW',
   MENTION = 'MENTION',
   IDEA_PUBLISHED = 'IDEA_PUBLISHED',
   IDEA_FEATURED = 'IDEA_FEATURED',
@@ -279,6 +275,13 @@ export interface SocketEvents {
   'idea:new': { 
     idea: Idea 
   };
+  'idea:updated': { 
+    idea: Idea 
+  };
+  'idea:deleted': { 
+    ideaId: string;
+    title: string;
+  };
 }
 
 // Form types
@@ -315,7 +318,6 @@ export interface DashboardStats {
   engagement: {
     upvotes: number;
     comments: number;
-    followers: number;
   };
   recentActivity: Activity[];
 }
@@ -339,7 +341,6 @@ export enum ActivityType {
   IDEA_VOTED = 'IDEA_VOTED',
   COMMENT_CREATED = 'COMMENT_CREATED',
   COMMENT_VOTED = 'COMMENT_VOTED',
-  USER_FOLLOWED = 'USER_FOLLOWED',
   BOOKMARK_ADDED = 'BOOKMARK_ADDED',
 }
 
