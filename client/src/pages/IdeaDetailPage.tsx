@@ -155,18 +155,24 @@ const IdeaDetailPage = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <LoadingSpinner size="lg" />
+      <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 flex items-center justify-center transition-colors duration-300">
+        <div className="text-center">
+          <LoadingSpinner size="lg" />
+          <p className="text-neutral-600 dark:text-neutral-400 mt-4">Loading idea details...</p>
+        </div>
       </div>
     );
   }
 
   if (error || !ideaData) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Idea not found</h1>
-          <p className="text-gray-600 mb-6">The idea you're looking for doesn't exist or has been removed.</p>
+      <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 flex items-center justify-center transition-colors duration-300">
+        <div className="text-center glass-card rounded-2xl p-8 max-w-md mx-4">
+          <div className="w-16 h-16 bg-gradient-to-br from-red-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <EyeIcon className="w-8 h-8 text-white" />
+          </div>
+          <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-4">Idea not found</h1>
+          <p className="text-neutral-600 dark:text-neutral-400 mb-6">The idea you're looking for doesn't exist or has been removed.</p>
           <Link to="/explore" className="btn btn-primary">
             Explore Ideas
           </Link>
@@ -179,42 +185,42 @@ const IdeaDetailPage = () => {
   const isOwner = user?.id === idea.author.id;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 transition-colors duration-300">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Back Button */}
+        {/* Enhanced Back Button */}
         <button
           onClick={() => navigate(-1)}
-          className="flex items-center text-gray-600 hover:text-gray-900 mb-6 transition-colors"
+          className="flex items-center text-neutral-600 dark:text-neutral-400 hover:text-primary-600 dark:hover:text-primary-400 mb-6 transition-all duration-300 group"
         >
-          <ArrowLeftIcon className="w-4 h-4 mr-2" />
-          Back
+          <ArrowLeftIcon className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform duration-300" />
+          Back to ideas
         </button>
 
         {/* Main Content */}
-        <div className="bg-white rounded-lg shadow-sm">
+        <div className="glass-card rounded-3xl shadow-2xl overflow-hidden">
           {/* Header */}
-          <div className="p-6 border-b border-gray-200">
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex items-center space-x-3">
+          <div className="p-8 border-b border-neutral-200 dark:border-neutral-800">
+            <div className="flex items-start justify-between mb-6">
+              <div className="flex items-center space-x-4">
                 {idea.author.avatar ? (
                   <img
                     src={idea.author.avatar}
                     alt={idea.author.username}
-                    className="w-12 h-12 rounded-full object-cover"
+                    className="w-14 h-14 rounded-xl object-cover ring-2 ring-primary-500/20"
                   />
                 ) : (
-                  <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
-                    <UserIcon className="w-6 h-6 text-gray-600" />
+                  <div className="w-14 h-14 bg-gradient-to-br from-neutral-100 to-neutral-200 dark:from-neutral-800 dark:to-neutral-700 rounded-xl flex items-center justify-center">
+                    <UserIcon className="w-7 h-7 text-neutral-600 dark:text-neutral-400" />
                   </div>
                 )}
                 <div>
                   <Link
                     to={`/users/${idea.author.username}`}
-                    className="font-medium text-gray-900 hover:text-primary-600"
+                    className="font-semibold text-lg text-neutral-900 dark:text-neutral-100 hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-300"
                   >
                     {idea.author.username}
                   </Link>
-                  <div className="flex items-center space-x-4 text-sm text-gray-500">
+                  <div className="flex items-center space-x-4 text-sm text-neutral-500 dark:text-neutral-400 mt-1">
                     <span className="flex items-center">
                       <CalendarIcon className="w-4 h-4 mr-1" />
                       {formatDistanceToNow(new Date(idea.createdAt), { addSuffix: true })}
@@ -228,30 +234,30 @@ const IdeaDetailPage = () => {
               </div>
 
               <div className="flex items-center space-x-2">
-                {/* Actions */}
+                {/* Enhanced Actions */}
                 <button
                   onClick={handleShare}
-                  className="p-2 text-gray-400 hover:text-gray-600 rounded-md transition-colors"
-                  title="Share"
+                  className="p-3 text-neutral-400 dark:text-neutral-500 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-xl transition-all duration-300 group"
+                  title="Share idea"
                 >
-                  <ShareIcon className="w-5 h-5" />
+                  <ShareIcon className="w-5 h-5 group-hover:rotate-12 transition-transform duration-300" />
                 </button>
 
-                {isAuthenticated && (
+                {isAuthenticated && !isOwner && (
                   <button
                     onClick={handleBookmark}
                     disabled={isBookmarking}
-                    className={`p-2 rounded-md transition-colors ${
+                    className={`p-3 rounded-xl transition-all duration-300 group ${
                       idea.isBookmarked
-                        ? 'text-primary-600 hover:text-primary-700'
-                        : 'text-gray-400 hover:text-gray-600'
+                        ? 'text-accent-600 dark:text-accent-400 bg-accent-50 dark:bg-accent-900/20 hover:bg-accent-100 dark:hover:bg-accent-900/30'
+                        : 'text-neutral-400 dark:text-neutral-500 hover:text-accent-600 dark:hover:text-accent-400 hover:bg-neutral-100 dark:hover:bg-neutral-800'
                     }`}
                     title={idea.isBookmarked ? 'Remove bookmark' : 'Bookmark idea'}
                   >
                     {idea.isBookmarked ? (
-                      <BookmarkIconSolid className="w-5 h-5" />
+                      <BookmarkIconSolid className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
                     ) : (
-                      <BookmarkIcon className="w-5 h-5" />
+                      <BookmarkIcon className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
                     )}
                   </button>
                 )}
@@ -260,18 +266,18 @@ const IdeaDetailPage = () => {
                   <>
                     <Link
                       to={`/ideas/${idea.id}/edit`}
-                      className="p-2 text-gray-400 hover:text-gray-600 rounded-md transition-colors"
+                      className="p-3 text-neutral-400 dark:text-neutral-500 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-xl transition-all duration-300 group"
                       title="Edit idea"
                     >
-                      <PencilIcon className="w-5 h-5" />
+                      <PencilIcon className="w-5 h-5 group-hover:rotate-12 transition-transform duration-300" />
                     </Link>
                     <button
                       onClick={handleDelete}
                       disabled={deleteMutation.isPending}
-                      className="p-2 text-gray-400 hover:text-red-600 rounded-md transition-colors"
+                      className="p-3 text-neutral-400 dark:text-neutral-500 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-all duration-300 group"
                       title="Delete idea"
                     >
-                      <TrashIcon className="w-5 h-5" />
+                      <TrashIcon className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
                     </button>
                   </>
                 )}
@@ -279,22 +285,26 @@ const IdeaDetailPage = () => {
             </div>
 
             {/* Title and Category */}
-            <div className="flex items-start justify-between mb-4">
-              <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 flex-1 mr-4">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
+              <h1 className="text-3xl lg:text-4xl font-bold text-neutral-900 dark:text-neutral-100 leading-tight">
                 {idea.title}
               </h1>
-              {idea.category && <CategoryBadge category={idea.category} />}
+              {idea.category && (
+                <div className="flex-shrink-0">
+                  <CategoryBadge category={idea.category} />
+                </div>
+              )}
             </div>
 
             {/* Tags */}
             {((idea.techStack && idea.techStack.length > 0) || (idea.aiTechStack && idea.aiTechStack.length > 0)) && (
-              <div className="flex flex-wrap gap-2 mb-4">
+              <div className="flex flex-wrap gap-2 mb-6">
                 {(idea.techStack || idea.aiTechStack || []).map((tag: string, index: number) => (
                   <span
                     key={index}
-                    className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-700"
+                    className="inline-flex items-center px-3 py-1.5 rounded-xl text-sm font-medium bg-gradient-to-r from-primary-50 to-accent-50 dark:from-primary-900/30 dark:to-accent-900/30 text-primary-700 dark:text-primary-300 border border-primary-200 dark:border-primary-800"
                   >
-                    <TagIcon className="w-3 h-3 mr-1" />
+                    <TagIcon className="w-3 h-3 mr-1.5" />
                     {tag}
                   </span>
                 ))}
@@ -311,31 +321,35 @@ const IdeaDetailPage = () => {
                 orientation="horizontal"
               />
               
-              <div className="text-sm text-gray-500">
+              <div className="text-sm text-neutral-500 dark:text-neutral-400 bg-neutral-100 dark:bg-neutral-800 px-3 py-2 rounded-lg">
                 {idea._count?.comments || 0} comments
               </div>
             </div>
           </div>
 
           {/* Description */}
-          <div className="p-6 border-b border-gray-200">
-            <div className="prose max-w-none">
-              <div className="whitespace-pre-wrap text-gray-700 leading-relaxed">
+          <div className="p-8 border-b border-neutral-200 dark:border-neutral-800">
+            <h2 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100 mb-4">About this idea</h2>
+            <div className="prose max-w-none dark:prose-invert">
+              <div className="whitespace-pre-wrap text-neutral-700 dark:text-neutral-300 leading-relaxed text-lg">
                 {idea.description}
               </div>
             </div>
 
             {/* Technical Details */}
             {((idea.techStack && idea.techStack.length > 0) || (idea.aiTechStack && idea.aiTechStack.length > 0) || idea.difficulty || idea.aiComplexity || idea.estimatedTime) && (
-              <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-gray-50 rounded-lg">
+              <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6 p-6 bg-gradient-to-br from-neutral-50 to-neutral-100 dark:from-neutral-800 dark:to-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-700">
                 {((idea.techStack && idea.techStack.length > 0) || (idea.aiTechStack && idea.aiTechStack.length > 0)) && (
                   <div>
-                    <h4 className="font-medium text-gray-900 mb-2">Tech Stack</h4>
-                    <div className="flex flex-wrap gap-1">
+                    <h4 className="font-semibold text-neutral-900 dark:text-neutral-100 mb-3 flex items-center">
+                      <TagIcon className="w-4 h-4 mr-2 text-primary-600 dark:text-primary-400" />
+                      Tech Stack
+                    </h4>
+                    <div className="flex flex-wrap gap-2">
                       {(idea.techStack || idea.aiTechStack || []).map((tech: string, index: number) => (
                         <span
                           key={index}
-                          className="px-2 py-1 bg-white rounded text-xs text-gray-600"
+                          className="px-2.5 py-1 bg-white dark:bg-neutral-800 rounded-lg text-xs font-medium text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-neutral-700"
                         >
                           {tech}
                         </span>
@@ -346,17 +360,20 @@ const IdeaDetailPage = () => {
                 
                 {(idea.difficulty || idea.aiComplexity) && (
                   <div>
-                    <h4 className="font-medium text-gray-900 mb-2">Difficulty</h4>
-                    <span className="text-sm text-gray-600 capitalize">
+                    <h4 className="font-semibold text-neutral-900 dark:text-neutral-100 mb-3">Difficulty</h4>
+                    <div className="inline-flex items-center px-3 py-1.5 rounded-lg bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/30 dark:to-red-900/30 text-orange-700 dark:text-orange-300 text-sm font-medium border border-orange-200 dark:border-orange-800">
                       {(idea.difficulty || idea.aiComplexity || '').toLowerCase()}
-                    </span>
+                    </div>
                   </div>
                 )}
                 
                 {idea.estimatedTime && (
                   <div>
-                    <h4 className="font-medium text-gray-900 mb-2">Estimated Time</h4>
-                    <span className="text-gray-600">{idea.counts?.votes || idea._count?.votes || 0} votes</span>
+                    <h4 className="font-semibold text-neutral-900 dark:text-neutral-100 mb-3">Estimated Time</h4>
+                    <div className="inline-flex items-center px-3 py-1.5 rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 text-blue-700 dark:text-blue-300 text-sm font-medium border border-blue-200 dark:border-blue-800">
+                      <CalendarIcon className="w-4 h-4 mr-1.5" />
+                      {idea.estimatedTime}
+                    </div>
                   </div>
                 )}
               </div>
@@ -364,8 +381,11 @@ const IdeaDetailPage = () => {
           </div>
 
           {/* Comments Section */}
-          <div className="p-6">
-            <CommentSection ideaId={idea.id} />
+          <div className="border-t border-neutral-200 dark:border-neutral-800">
+            <div className="p-8">
+              <h2 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100 mb-6">Discussion</h2>
+              <CommentSection ideaId={idea.id} />
+            </div>
           </div>
         </div>
       </div>

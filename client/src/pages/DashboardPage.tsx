@@ -65,70 +65,78 @@ const DashboardPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="mb-8">
+    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 transition-colors duration-300">
+      {/* Enhanced Hero Section */}
+      <div className="relative bg-gradient-to-br from-primary-600 via-primary-700 to-accent-600 dark:from-primary-800 dark:via-primary-900 dark:to-accent-800 overflow-hidden">
+        <div className="absolute inset-0 bg-grid opacity-10"></div>
+        <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 dark:bg-white/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-white/5 dark:bg-white/10 rounded-full blur-3xl"></div>
+        
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-              <p className="text-gray-600 mt-1">
-                Welcome back, {user?.username}! Here's what's happening with your ideas.
+              <h1 className="text-4xl font-bold text-white mb-2 tracking-tight">
+                Welcome back, <span className="text-accent-200">{user?.username}</span>!
+              </h1>
+              <p className="text-primary-100 text-lg">
+                Here's what's happening with your ideas and projects.
               </p>
             </div>
-            <Link to="/create" className="btn btn-primary flex items-center">
-              <PlusIcon className="w-5 h-5 mr-2" />
+            <Link to="/create" className="btn btn-white-primary glass-card flex items-center shadow-xl hover:shadow-2xl transition-all duration-300 group">
+              <PlusIcon className="w-5 h-5 mr-2 group-hover:rotate-90 transition-transform duration-300" />
               New Idea
             </Link>
           </div>
         </div>
+      </div>
 
-        {/* Stats Grid */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-10 pb-16">
+        {/* Enhanced Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-lg p-6 shadow-sm">
+          <div className="glass-card rounded-2xl p-6 group hover:scale-105 transition-all duration-300">
             <div className="flex items-center">
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <LightBulbIcon className="w-6 h-6 text-blue-600" />
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                <LightBulbIcon className="w-6 h-6 text-white" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Total Ideas</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.totalIdeas}</p>
+                <p className="text-sm font-medium text-neutral-600 dark:text-neutral-400">Total Ideas</p>
+                <p className="text-3xl font-bold text-neutral-900 dark:text-neutral-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">{stats.totalIdeas}</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg p-6 shadow-sm">
+          <div className="glass-card rounded-2xl p-6 group hover:scale-105 transition-all duration-300">
             <div className="flex items-center">
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                <HeartIcon className="w-6 h-6 text-green-600" />
+              <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                <HeartIcon className="w-6 h-6 text-white" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Total Votes</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.totalVotes}</p>
+                <p className="text-sm font-medium text-neutral-600 dark:text-neutral-400">Total Votes</p>
+                <p className="text-3xl font-bold text-neutral-900 dark:text-neutral-100 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors duration-300">{stats.totalVotes}</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg p-6 shadow-sm">
+          <div className="glass-card rounded-2xl p-6 group hover:scale-105 transition-all duration-300">
             <div className="flex items-center">
-              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                <ChatBubbleLeftIcon className="w-6 h-6 text-purple-600" />
+              <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                <ChatBubbleLeftIcon className="w-6 h-6 text-white" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Comments</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.totalComments}</p>
+                <p className="text-sm font-medium text-neutral-600 dark:text-neutral-400">Comments</p>
+                <p className="text-3xl font-bold text-neutral-900 dark:text-neutral-100 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors duration-300">{stats.totalComments}</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg p-6 shadow-sm">
+          <div className="glass-card rounded-2xl p-6 group hover:scale-105 transition-all duration-300">
             <div className="flex items-center">
-              <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
-                <EyeIcon className="w-6 h-6 text-orange-600" />
+              <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                <EyeIcon className="w-6 h-6 text-white" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Total Views</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.totalViews}</p>
+                <p className="text-sm font-medium text-neutral-600 dark:text-neutral-400">Total Views</p>
+                <p className="text-3xl font-bold text-neutral-900 dark:text-neutral-100 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors duration-300">{stats.totalViews}</p>
               </div>
             </div>
           </div>
@@ -137,26 +145,26 @@ const DashboardPage = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2">
-            {/* Tabs */}
-            <div className="bg-white rounded-lg shadow-sm mb-6">
-              <div className="border-b border-gray-200">
+            {/* Enhanced Tabs */}
+            <div className="glass-card rounded-2xl mb-6 overflow-hidden">
+              <div className="border-b border-neutral-200 dark:border-neutral-800">
                 <nav className="flex space-x-8 px-6" aria-label="Tabs">
                   {tabs.map((tab) => (
                     <button
                       key={tab.id}
                       onClick={() => setActiveTab(tab.id as any)}
-                      className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
+                      className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-all duration-300 ${
                         activeTab === tab.id
-                          ? 'border-primary-500 text-primary-600'
-                          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                          ? 'border-primary-500 text-primary-600 dark:text-primary-400'
+                          : 'border-transparent text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300 hover:border-neutral-300 dark:hover:border-neutral-600'
                       }`}
                     >
                       {tab.label}
                       {tab.count > 0 && (
-                        <span className={`ml-2 py-0.5 px-2 rounded-full text-xs ${
+                        <span className={`ml-2 py-0.5 px-2 rounded-full text-xs transition-all duration-300 ${
                           activeTab === tab.id
-                            ? 'bg-primary-100 text-primary-600'
-                            : 'bg-gray-100 text-gray-900'
+                            ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400'
+                            : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100'
                         }`}>
                           {tab.count}
                         </span>
@@ -174,13 +182,16 @@ const DashboardPage = () => {
                         <LoadingSpinner size="lg" />
                       </div>
                     ) : ideas.length === 0 ? (
-                      <div className="text-center py-8">
-                        <LightBulbIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                        <h3 className="text-lg font-medium text-gray-900 mb-2">No ideas yet</h3>
-                        <p className="text-gray-600 mb-4">
-                          Share your first idea with the community!
+                      <div className="text-center py-12">
+                        <div className="w-20 h-20 bg-gradient-to-br from-primary-500 to-accent-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                          <LightBulbIcon className="w-10 h-10 text-white" />
+                        </div>
+                        <h3 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100 mb-3">No ideas yet</h3>
+                        <p className="text-neutral-600 dark:text-neutral-400 mb-6 max-w-md mx-auto">
+                          Share your first innovative idea with the community and start building your portfolio!
                         </p>
-                        <Link to="/create" className="btn btn-primary">
+                        <Link to="/create" className="btn btn-primary inline-flex items-center shadow-lg shadow-primary-500/25 hover:shadow-primary-500/40">
+                          <PlusIcon className="w-5 h-5 mr-2" />
                           Create Your First Idea
                         </Link>
                       </div>
@@ -195,13 +206,13 @@ const DashboardPage = () => {
                 )}
 
                 {activeTab === 'bookmarks' && (
-                  <div className="text-center py-8">
-                    <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <HeartIcon className="w-6 h-6 text-gray-400" />
+                  <div className="text-center py-12">
+                    <div className="w-20 h-20 bg-gradient-to-br from-rose-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                      <HeartIcon className="w-10 h-10 text-white" />
                     </div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">No bookmarks yet</h3>
-                    <p className="text-gray-600">
-                      Bookmark ideas you find interesting to save them for later.
+                    <h3 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100 mb-3">No bookmarks yet</h3>
+                    <p className="text-neutral-600 dark:text-neutral-400 max-w-md mx-auto">
+                      Bookmark ideas you find interesting to save them for later reference and inspiration.
                     </p>
                   </div>
                 )}
@@ -209,13 +220,13 @@ const DashboardPage = () => {
                 {activeTab === 'activity' && (
                   <div className="space-y-4">
                     {recentActivity.map((activity, index) => (
-                      <div key={index} className="flex items-start space-x-3 p-3 rounded-lg hover:bg-gray-50">
-                        <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
-                          <activity.icon className="w-4 h-4 text-gray-600" />
+                      <div key={index} className="flex items-start space-x-4 p-4 rounded-xl hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-all duration-300 group">
+                        <div className="w-10 h-10 bg-gradient-to-br from-neutral-100 to-neutral-200 dark:from-neutral-800 dark:to-neutral-700 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                          <activity.icon className="w-5 h-5 text-neutral-600 dark:text-neutral-400" />
                         </div>
                         <div className="flex-1">
-                          <p className="text-sm text-gray-900">{activity.message}</p>
-                          <p className="text-xs text-gray-500">{activity.time}</p>
+                          <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">{activity.message}</p>
+                          <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">{activity.time}</p>
                         </div>
                       </div>
                     ))}
@@ -225,13 +236,13 @@ const DashboardPage = () => {
             </div>
           </div>
 
-          {/* Sidebar */}
+          {/* Enhanced Sidebar */}
           <div className="space-y-6">
             {/* Quick Actions */}
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Quick Actions</h3>
+            <div className="glass-card rounded-2xl p-6">
+              <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-6">Quick Actions</h3>
               <div className="space-y-3">
-                <Link to="/create" className="btn btn-primary w-full flex items-center justify-center">
+                <Link to="/create" className="btn btn-primary w-full flex items-center justify-center shadow-lg shadow-primary-500/25 hover:shadow-primary-500/40">
                   <PlusIcon className="w-4 h-4 mr-2" />
                   New Idea
                 </Link>
@@ -245,27 +256,27 @@ const DashboardPage = () => {
             </div>
 
             {/* Achievements */}
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Achievements</h3>
-              <div className="space-y-3">
-                <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
-                    <TrophyIcon className="w-4 h-4 text-yellow-600" />
+            <div className="glass-card rounded-2xl p-6">
+              <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-6">Achievements</h3>
+              <div className="space-y-4">
+                <div className="flex items-center space-x-4 p-3 rounded-xl bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 border border-yellow-200 dark:border-yellow-800">
+                  <div className="w-10 h-10 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl flex items-center justify-center">
+                    <TrophyIcon className="w-5 h-5 text-white" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-900">First Idea</p>
-                    <p className="text-xs text-gray-500">Created your first idea</p>
+                    <p className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">First Idea</p>
+                    <p className="text-xs text-neutral-600 dark:text-neutral-400">Created your first idea</p>
                   </div>
                 </div>
                 
                 {stats.totalVotes >= 10 && (
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                      <HeartIcon className="w-4 h-4 text-green-600" />
+                  <div className="flex items-center space-x-4 p-3 rounded-xl bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border border-green-200 dark:border-green-800">
+                    <div className="w-10 h-10 bg-gradient-to-br from-green-400 to-emerald-500 rounded-xl flex items-center justify-center">
+                      <HeartIcon className="w-5 h-5 text-white" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-900">Popular Creator</p>
-                      <p className="text-xs text-gray-500">Received 10+ votes</p>
+                      <p className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">Popular Creator</p>
+                      <p className="text-xs text-neutral-600 dark:text-neutral-400">Received 10+ votes</p>
                     </div>
                   </div>
                 )}

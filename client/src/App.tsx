@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuthStore } from './store/authStore';
 import { useSocketStore } from './store/socketStore';
+import { useThemeStore } from './store/themeStore';
 import { authApi } from './api/auth';
 import toast from 'react-hot-toast';
 
@@ -35,6 +36,9 @@ import LoadingSpinner from './components/ui/LoadingSpinner';
 function App() {
   const { isAuthenticated, tokens, setUser, logout, setLoading, isLoading } = useAuthStore();
   const { connect, disconnect } = useSocketStore();
+  
+  // Initialize theme store (this triggers theme initialization)
+  useThemeStore();
 
   // Initialize app
   useEffect(() => {

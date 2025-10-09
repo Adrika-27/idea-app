@@ -7,7 +7,6 @@ import {
   XMarkIcon, 
   PlusIcon, 
   BellIcon,
-  UserCircleIcon,
   MagnifyingGlassIcon,
   HomeIcon,
   GlobeAltIcon
@@ -15,6 +14,7 @@ import {
 import { Menu, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
 import toast from 'react-hot-toast';
+import ThemeToggle from '../ui/ThemeToggle';
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -47,7 +47,7 @@ const Header = () => {
   ];
 
   return (
-    <header className="sticky top-0 z-50 glass-nav backdrop-blur-xl border-b border-neutral-200/20 shadow-sm">
+    <header className="sticky top-0 z-50 glass-nav backdrop-blur-xl border-b border-neutral-200/20 dark:border-neutral-800/20 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
@@ -58,7 +58,7 @@ const Header = () => {
               </div>
               <div className="flex flex-col">
                 <span className="text-xl font-bold gradient-text-primary">HackIdeas</span>
-                <span className="text-xs text-neutral-500 -mt-1 tracking-wide">Pro</span>
+                <span className="text-xs text-neutral-500 dark:text-neutral-400 -mt-1 tracking-wide">Pro</span>
               </div>
             </Link>
           </div>
@@ -69,7 +69,7 @@ const Header = () => {
               <Link
                 key={item.name}
                 to={item.href}
-                className="flex items-center space-x-2 text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100/80 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 group"
+                className="flex items-center space-x-2 text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 hover:bg-neutral-100/80 dark:hover:bg-neutral-800/80 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 group"
               >
                 <item.icon className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
                 <span>{item.name}</span>
@@ -79,6 +79,9 @@ const Header = () => {
 
           {/* Right side */}
           <div className="flex items-center space-x-3">
+            {/* Theme Toggle */}
+            <ThemeToggle />
+            
             {isAuthenticated ? (
               <>
                 {/* Create button */}
@@ -93,7 +96,7 @@ const Header = () => {
                 {/* Notifications */}
                 <Link
                   to="/notifications"
-                  className="relative p-2.5 text-neutral-600 hover:text-primary-600 rounded-xl hover:bg-neutral-100/80 transition-all duration-200 group"
+                  className="relative p-2.5 text-neutral-600 dark:text-neutral-400 hover:text-primary-600 dark:hover:text-primary-400 rounded-xl hover:bg-neutral-100/80 dark:hover:bg-neutral-800/80 transition-all duration-200 group"
                 >
                   <BellIcon className="w-5 h-5 group-hover:scale-110 transition-transform duration-200" />
                   {/* Notification badge */}
@@ -102,19 +105,19 @@ const Header = () => {
 
                 {/* User menu */}
                 <Menu as="div" className="relative">
-                  <Menu.Button className="flex items-center space-x-3 p-2 rounded-xl hover:bg-neutral-100/80 transition-all duration-200 group">
+                  <Menu.Button className="flex items-center space-x-3 p-2 rounded-xl hover:bg-neutral-100/80 dark:hover:bg-neutral-800/80 transition-all duration-200 group">
                     {user?.avatar ? (
                       <img
                         src={user.avatar}
                         alt={user.username}
-                        className="w-8 h-8 rounded-full object-cover ring-2 ring-transparent group-hover:ring-primary-200 transition-all duration-200"
+                        className="w-8 h-8 rounded-full object-cover ring-2 ring-transparent group-hover:ring-primary-200 dark:group-hover:ring-primary-800 transition-all duration-200"
                       />
                     ) : (
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center text-white text-sm font-semibold ring-2 ring-transparent group-hover:ring-primary-200 transition-all duration-200">
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center text-white text-sm font-semibold ring-2 ring-transparent group-hover:ring-primary-200 dark:group-hover:ring-primary-800 transition-all duration-200">
                         {user?.username?.charAt(0).toUpperCase()}
                       </div>
                     )}
-                    <span className="hidden sm:inline text-sm font-medium text-neutral-700 group-hover:text-neutral-900 transition-colors duration-200">
+                    <span className="hidden sm:inline text-sm font-medium text-neutral-700 dark:text-neutral-300 group-hover:text-neutral-900 dark:group-hover:text-neutral-100 transition-colors duration-200">
                       {user?.username}
                     </span>
                   </Menu.Button>
@@ -128,7 +131,7 @@ const Header = () => {
                     leaveFrom="transform opacity-100 scale-100 translate-y-0"
                     leaveTo="transform opacity-0 scale-95 translate-y-1"
                   >
-                    <Menu.Items className="absolute right-0 mt-3 w-56 bg-white/90 backdrop-blur-xl rounded-2xl shadow-xl border border-neutral-200/50 focus:outline-none z-50 overflow-hidden">
+                    <Menu.Items className="absolute right-0 mt-3 w-56 bg-white/90 dark:bg-neutral-900/90 backdrop-blur-xl rounded-2xl shadow-xl border border-neutral-200/50 dark:border-neutral-800/50 focus:outline-none z-50 overflow-hidden">
                       <div className="py-2">
                         {userNavigation.map((item) => (
                           <Menu.Item key={item.name}>
@@ -136,22 +139,26 @@ const Header = () => {
                               <Link
                                 to={item.href}
                                 className={`${
-                                  active ? 'bg-neutral-100/80 text-neutral-900' : 'text-neutral-700'
-                                } flex items-center px-4 py-3 text-sm font-medium transition-all duration-200 hover:bg-neutral-100/80`}
+                                  active 
+                                    ? 'bg-neutral-100/80 dark:bg-neutral-800/80 text-neutral-900 dark:text-neutral-100' 
+                                    : 'text-neutral-700 dark:text-neutral-300'
+                                } flex items-center px-4 py-3 text-sm font-medium transition-all duration-200 hover:bg-neutral-100/80 dark:hover:bg-neutral-800/80`}
                               >
                                 {item.name}
                               </Link>
                             )}
                           </Menu.Item>
                         ))}
-                        <div className="border-t border-neutral-200/50 my-1"></div>
+                        <div className="border-t border-neutral-200/50 dark:border-neutral-800/50 my-1"></div>
                         <Menu.Item>
                           {({ active }) => (
                             <button
                               onClick={handleLogout}
                               className={`${
-                                active ? 'bg-error-50 text-error-700' : 'text-neutral-700'
-                              } flex items-center w-full px-4 py-3 text-sm font-medium transition-all duration-200 hover:bg-error-50 hover:text-error-700`}
+                                active 
+                                  ? 'bg-error-50 dark:bg-error-900/50 text-error-700 dark:text-error-400' 
+                                  : 'text-neutral-700 dark:text-neutral-300'
+                              } flex items-center w-full px-4 py-3 text-sm font-medium transition-all duration-200 hover:bg-error-50 dark:hover:bg-error-900/50 hover:text-error-700 dark:hover:text-error-400`}
                             >
                               Sign out
                             </button>
@@ -166,7 +173,7 @@ const Header = () => {
               <div className="flex items-center space-x-3">
                 <Link
                   to="/auth/login"
-                  className="text-neutral-600 hover:text-neutral-900 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 hover:bg-neutral-100/80"
+                  className="text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 hover:bg-neutral-100/80 dark:hover:bg-neutral-800/80"
                 >
                   Sign in
                 </Link>
@@ -182,7 +189,7 @@ const Header = () => {
             {/* Mobile menu button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden p-2.5 rounded-xl text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100/80 transition-all duration-200"
+              className="md:hidden p-2.5 rounded-xl text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 hover:bg-neutral-100/80 dark:hover:bg-neutral-800/80 transition-all duration-200"
             >
               {isMobileMenuOpen ? (
                 <XMarkIcon className="w-5 h-5" />
@@ -195,13 +202,13 @@ const Header = () => {
 
         {/* Mobile menu */}
         {isMobileMenuOpen && (
-          <div className="md:hidden border-t border-neutral-200/50 bg-white/90 backdrop-blur-xl">
+          <div className="md:hidden border-t border-neutral-200/50 dark:border-neutral-800/50 bg-white/90 dark:bg-neutral-950/90 backdrop-blur-xl">
             <div className="px-4 py-6 space-y-2">
               {navigation.map((item) => (
                 <Link
                   key={item.name}
                   to={item.href}
-                  className="flex items-center space-x-3 text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100/80 px-4 py-3 rounded-xl text-base font-medium transition-all duration-200"
+                  className="flex items-center space-x-3 text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 hover:bg-neutral-100/80 dark:hover:bg-neutral-800/80 px-4 py-3 rounded-xl text-base font-medium transition-all duration-200"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   <item.icon className="w-5 h-5" />
@@ -211,12 +218,12 @@ const Header = () => {
               
               {isAuthenticated && (
                 <>
-                  <div className="border-t border-neutral-200/50 my-4"></div>
+                  <div className="border-t border-neutral-200/50 dark:border-neutral-800/50 my-4"></div>
                   {userNavigation.map((item) => (
                     <Link
                       key={item.name}
                       to={item.href}
-                      className="block text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100/80 px-4 py-3 rounded-xl text-base font-medium transition-all duration-200"
+                      className="block text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 hover:bg-neutral-100/80 dark:hover:bg-neutral-800/80 px-4 py-3 rounded-xl text-base font-medium transition-all duration-200"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       {item.name}
@@ -227,7 +234,7 @@ const Header = () => {
                       handleLogout();
                       setIsMobileMenuOpen(false);
                     }}
-                    className="block w-full text-left text-gray-600 hover:text-primary-600 hover:bg-gray-100 px-3 py-2 rounded-md text-base font-medium transition-colors"
+                    className="block w-full text-left text-neutral-600 dark:text-neutral-400 hover:text-error-600 dark:hover:text-error-400 hover:bg-error-50 dark:hover:bg-error-900/50 px-4 py-3 rounded-xl text-base font-medium transition-all duration-200"
                   >
                     Sign out
                   </button>
