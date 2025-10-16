@@ -29,22 +29,40 @@ export interface Idea {
   status: IdeaStatus;
   authorId: string;
   author: Pick<User, 'id' | 'username' | 'avatar' | 'karmaScore'>;
+  
+  // Enhanced filtering fields
+  techStack: string[];
+  difficulty: DifficultyLevel;
+  timeCommitment: TimeCommitment;
+  
+  // Engagement metrics
   voteScore: number;
   viewCount: number;
   views?: number;
   commentCount: number;
+  trendingScore?: number;
+  
+  // Timestamps
   createdAt: string;
   updatedAt: string;
   publishedAt?: string;
+  
+  // AI enhancement
   aiEnhancedDescription?: string;
   aiTechStack: string[];
-  techStack?: string[];
   aiComplexity?: string;
-  difficulty?: 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
-  estimatedTime?: string;
+  
+  // Media
   images: string[];
+  
+  // User interactions
   userVote?: VoteType | null;
   isBookmarked?: boolean;
+  recommendationScore?: number;
+  
+  // Legacy fields for backward compatibility
+  estimatedTime?: string;
+  
   counts?: {
     votes: number;
     comments: number;
@@ -342,6 +360,120 @@ export enum ActivityType {
   COMMENT_CREATED = 'COMMENT_CREATED',
   COMMENT_VOTED = 'COMMENT_VOTED',
   BOOKMARK_ADDED = 'BOOKMARK_ADDED',
+  COLLECTION_CREATED = 'COLLECTION_CREATED',
+  COLLECTION_UPDATED = 'COLLECTION_UPDATED',
+  IDEA_VIEWED = 'IDEA_VIEWED',
+}
+
+// Enhanced Discovery Types
+export enum DifficultyLevel {
+  BEGINNER = 'BEGINNER',
+  INTERMEDIATE = 'INTERMEDIATE',
+  ADVANCED = 'ADVANCED',
+  EXPERT = 'EXPERT'
+}
+
+export enum TimeCommitment {
+  QUICK = 'QUICK',
+  SHORT = 'SHORT',
+  MEDIUM = 'MEDIUM',
+  LONG = 'LONG',
+  EXTENDED = 'EXTENDED'
+}
+
+// User Preferences
+export interface UserPreferences {
+  id?: string;
+  userId?: string;
+  preferredCategories: IdeaCategory[];
+  preferredTechStack: string[];
+  preferredDifficulty: DifficultyLevel[];
+  preferredTimeCommitment: TimeCommitment[];
+  enableRecommendations: boolean;
+  enableTrending: boolean;
+  recommendationWeight?: Record<string, number>;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+// Bookmark Collections
+export interface BookmarkCollection {
+  id: string;
+  name: string;
+  description?: string;
+  userId: string;
+  user?: Pick<User, 'id' | 'username' | 'avatar' | 'karmaScore'>;
+  isPublic: boolean;
+  tags: string[];
+  color?: string;
+  items?: BookmarkCollectionItem[];
+  _count?: {
+    items: number;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface BookmarkCollectionItem {
+  id: string;
+  collectionId: string;
+  ideaId: string;
+  idea: Idea;
+  notes?: string;
+  addedAt: string;
+}
+
+// Recommendations
+export interface RecommendationResponse {
+  recommendations: Idea[];
+  criteria: RecommendationCriteria;
+  total: number;
+}
+
+export interface RecommendationCriteria {
+  categories?: IdeaCategory[];
+  techStack?: string[];
+  difficulty?: DifficultyLevel[];
+  timeCommitment?: TimeCommitment[];
+}
+
+// Trending
+export interface TrendingResponse {
+  topics: TrendingTopic[];
+  ideas: Idea[];
+  period: string;
+  category?: IdeaCategory;
+}
+
+export interface TrendingTopic {
+  id: string;
+  name: string;
+  category?: IdeaCategory;
+  score: number;
+  mentionCount: number;
+  period: string;
+  createdAt: string;
+  updatedAt: string;
+  calculatedAt: string;
+}
+
+// Enhanced Filtering
+export interface IdeaFilters {
+  category?: IdeaCategory;
+  difficulty?: DifficultyLevel;
+  timeCommitment?: TimeCommitment;
+  techStack?: string[];
+  tags?: string[];
+  search?: string;
+  sort?: 'newest' | 'oldest' | 'popular' | 'trending' | 'hot';
+}
+
+// Preferences Options
+export interface PreferencesOptions {
+  categories: IdeaCategory[];
+  difficultyLevels: DifficultyLevel[];
+  timeCommitments: TimeCommitment[];
+  commonTechStack: string[];
 }
 
 // Upload types

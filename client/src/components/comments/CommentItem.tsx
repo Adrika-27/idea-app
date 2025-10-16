@@ -116,7 +116,7 @@ const CommentItem = ({ comment, ideaId, onUpdate, level = 0 }: CommentItemProps)
   if (comment.isDeleted) {
     return (
       <div className={`${level > 0 ? 'ml-8' : ''} py-4`}>
-        <div className="text-gray-500 italic">This comment has been deleted.</div>
+        <div className="text-neutral-500 dark:text-neutral-400 italic">This comment has been deleted.</div>
       </div>
     );
   }
@@ -133,8 +133,8 @@ const CommentItem = ({ comment, ideaId, onUpdate, level = 0 }: CommentItemProps)
               className="w-8 h-8 rounded-full object-cover"
             />
           ) : (
-            <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-              <UserIcon className="w-4 h-4 text-gray-600" />
+            <div className="w-8 h-8 bg-neutral-200 dark:bg-neutral-700 rounded-full flex items-center justify-center">
+              <UserIcon className="w-4 h-4 text-neutral-600 dark:text-neutral-400" />
             </div>
           )}
         </div>
@@ -143,14 +143,14 @@ const CommentItem = ({ comment, ideaId, onUpdate, level = 0 }: CommentItemProps)
         <div className="flex-1 min-w-0">
           {/* Header */}
           <div className="flex items-center space-x-2 mb-1">
-            <span className="font-medium text-gray-900 text-sm">
+            <span className="font-medium text-neutral-900 dark:text-neutral-100 text-sm">
               {comment.author.username}
             </span>
-            <span className="text-xs text-gray-500">
+            <span className="text-xs text-neutral-500 dark:text-neutral-400">
               {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
             </span>
             {comment.updatedAt !== comment.createdAt && (
-              <span className="text-xs text-gray-500">(edited)</span>
+              <span className="text-xs text-neutral-500 dark:text-neutral-400">(edited)</span>
             )}
           </div>
 
@@ -183,7 +183,7 @@ const CommentItem = ({ comment, ideaId, onUpdate, level = 0 }: CommentItemProps)
               </div>
             </div>
           ) : (
-            <div className="text-gray-700 text-sm whitespace-pre-wrap mb-2">
+            <div className="text-neutral-700 dark:text-neutral-300 text-sm whitespace-pre-wrap mb-2">
               {comment.content}
             </div>
           )}
@@ -207,7 +207,7 @@ const CommentItem = ({ comment, ideaId, onUpdate, level = 0 }: CommentItemProps)
               {isAuthenticated && level < maxLevel && (
                 <button
                   onClick={() => setShowReplyForm(!showReplyForm)}
-                  className="text-gray-500 hover:text-gray-700 flex items-center"
+                  className="text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200 flex items-center"
                 >
                   <ChatBubbleLeftIcon className="w-3 h-3 mr-1" />
                   Reply
@@ -218,7 +218,7 @@ const CommentItem = ({ comment, ideaId, onUpdate, level = 0 }: CommentItemProps)
               {(comment._count?.replies || 0) > 0 && (
                 <button
                   onClick={() => setShowReplies(!showReplies)}
-                  className="text-gray-500 hover:text-gray-700 flex items-center"
+                  className="text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200 flex items-center"
                 >
                   {showReplies ? (
                     <ChevronUpIcon className="w-3 h-3 mr-1" />

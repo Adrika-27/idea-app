@@ -65,18 +65,18 @@ const ExplorePage = () => {
   return (
     <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 transition-colors duration-300">
       {/* Hero Section */}
-      <div className="relative bg-gradient-to-br from-primary-600 via-primary-700 to-accent-600 overflow-hidden">
-        <div className="absolute inset-0 bg-grid opacity-10"></div>
-        <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
+      <div className="relative bg-neutral-100/50 dark:bg-neutral-900/50 overflow-hidden">
+        <div className="absolute inset-0 bg-grid opacity-10 dark:opacity-5"></div>
+        <div className="absolute top-0 right-0 w-96 h-96 bg-neutral-200/20 dark:bg-neutral-800/20 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-neutral-200/20 dark:bg-neutral-800/20 rounded-full blur-3xl"></div>
         
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 tracking-tight">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-neutral-900 dark:text-white mb-6 tracking-tight">
               Explore Amazing 
-              <span className="block text-accent-200">Ideas</span>
+              <span className="block text-primary-600 dark:text-primary-400">Ideas</span>
             </h1>
-            <p className="text-xl text-primary-100 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-xl text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto leading-relaxed">
               Discover innovative hackathon and project ideas from our global community of creators
             </p>
           </div>

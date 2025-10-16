@@ -28,7 +28,10 @@ router.get('/', optionalAuth, validate([
   query('category').optional().isIn(Object.values(IdeaCategory)).withMessage('Invalid category'),
   query('tags').optional().isString().withMessage('Tags must be a string'),
   query('search').optional().isLength({ min: 2 }).withMessage('Search query must be at least 2 characters'),
-  query('sort').optional().isIn(['newest', 'oldest', 'popular', 'trending']).withMessage('Invalid sort option')
+  query('sort').optional().isIn(['newest', 'oldest', 'popular', 'trending', 'hot']).withMessage('Invalid sort option'),
+  query('difficulty').optional().isIn(['BEGINNER', 'INTERMEDIATE', 'ADVANCED', 'EXPERT']).withMessage('Invalid difficulty level'),
+  query('timeCommitment').optional().isIn(['QUICK', 'SHORT', 'MEDIUM', 'LONG', 'EXTENDED']).withMessage('Invalid time commitment'),
+  query('techStack').optional().isString().withMessage('Tech stack must be a string')
 ]), asyncHandler(async (req: AuthenticatedRequest, res) => {
   const prisma = getDatabase();
   
@@ -47,6 +50,9 @@ router.get('/', optionalAuth, validate([
   const sort = req.query.sort as string || 'hot';
   const tags = req.query.tags as string;
   const search = req.query.search as string;
+  const difficulty = req.query.difficulty as string;
+  const timeCommitment = req.query.timeCommitment as string;
+  const techStack = req.query.techStack as string;
 
   // Build where clause (include all ideas regardless of status)
   const where: any = {};
@@ -62,12 +68,40 @@ router.get('/', optionalAuth, validate([
     };
   }
 
+  if (difficulty) {
+    where.difficulty = difficulty;
+  }
+
+  if (timeCommitment) {
+    where.timeCommitment = timeCommitment;
+  }
+
+  if (techStack) {
+    const techStackArray = techStack.split(',').map(tech => tech.trim());
+    where.OR = where.OR || [];
+    where.OR.push(
+      { techStack: { hasSome: techStackArray } },
+      { aiTechStack: { hasSome: techStackArray } }
+    );
+  }
+
   if (search) {
-    where.OR = [
+    const searchConditions = [
       { title: { contains: search, mode: 'insensitive' } },
       { description: { contains: search, mode: 'insensitive' } },
       { content: { contains: search, mode: 'insensitive' } }
     ];
+    
+    if (where.OR) {
+      // If we already have OR conditions from techStack, combine them
+      where.AND = [
+        { OR: where.OR },
+        { OR: searchConditions }
+      ];
+      delete where.OR;
+    } else {
+      where.OR = searchConditions;
+    }
   }
 
   // Build order by clause

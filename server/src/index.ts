@@ -65,6 +65,9 @@ async function startServer() {
     const notificationRoutes = require('./routes/notifications').default;
     const uploadRoutes = require('./routes/upload').default;
     const aiRoutes = require('./routes/ai').default;
+    const recommendationsRoutes = require('./routes/recommendations').default;
+    const collectionsRoutes = require('./routes/collections').default;
+    const preferencesRoutes = require('./routes/preferences').default;
 
     // Create Express app and server AFTER database initialization
     const app = express();
@@ -164,6 +167,9 @@ async function startServer() {
     app.use('/api/notifications', notificationRoutes);
     app.use('/api/upload', uploadRoutes);
     app.use('/api/ai', aiRoutes);
+    app.use('/api/recommendations', recommendationsRoutes);
+    app.use('/api/collections', collectionsRoutes);
+    app.use('/api/preferences', preferencesRoutes);
     
     // API documentation
     app.get('*', (_req: any, res: any) => {
@@ -233,3 +239,6 @@ process.on('uncaughtException', (err: Error) => {
 });
 
 startServer();
+ 
+ 
+//restart

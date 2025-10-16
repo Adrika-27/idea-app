@@ -219,29 +219,29 @@ const HomePage = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="relative py-24 bg-gradient-to-br from-primary-600 via-primary-700 to-accent-600 overflow-hidden">
+      <section className="relative py-24 bg-neutral-100/50 dark:bg-neutral-900/50 overflow-hidden">
         {/* Enhanced Background decoration */}
-        <div className="absolute inset-0 bg-grid opacity-10"></div>
-        <div className="absolute top-0 left-0 w-96 h-96 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-radial from-white/5 via-transparent to-transparent rounded-full"></div>
+        <div className="absolute inset-0 bg-grid opacity-10 dark:opacity-5"></div>
+        <div className="absolute top-0 left-0 w-96 h-96 bg-primary-200/20 dark:bg-primary-800/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-accent-200/20 dark:bg-accent-800/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-radial from-primary-100/10 dark:from-primary-900/10 via-transparent to-transparent rounded-full"></div>
         
         <div className="relative max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-          <div className="inline-flex items-center justify-center p-2 bg-white/10 rounded-full mb-6 backdrop-blur-sm">
-            <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-white/20 text-white">
+          <div className="inline-flex items-center justify-center p-2 bg-primary-100/50 dark:bg-primary-900/50 rounded-full mb-6 backdrop-blur-sm border border-primary-200/50 dark:border-primary-800/50">
+            <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-primary-500/10 dark:bg-primary-400/10 text-primary-700 dark:text-primary-300">
               ✨ Ready to innovate?
             </span>
           </div>
           
-          <h2 className="text-4xl lg:text-6xl font-bold text-white mb-6 tracking-tight">
+          <h2 className="text-4xl lg:text-6xl font-bold text-neutral-900 dark:text-white mb-6 tracking-tight">
             Ready to Share Your Next 
             <br />
-            <span className="text-accent-200 bg-gradient-to-r from-accent-200 via-white to-accent-200 bg-clip-text text-transparent">
+            <span className="text-primary-600 dark:text-primary-400 bg-gradient-to-r from-primary-600 via-primary-500 to-accent-500 dark:from-primary-400 dark:via-primary-300 dark:to-accent-400 bg-clip-text text-transparent">
               Revolutionary Idea?
             </span>
           </h2>
           
-          <p className="text-xl text-primary-100 mb-10 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-xl text-neutral-600 dark:text-neutral-300 mb-10 max-w-2xl mx-auto leading-relaxed">
             Join thousands of innovators who are already building the future together. 
             Turn your concepts into reality with the power of our global community.
           </p>

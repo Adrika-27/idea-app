@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
@@ -12,6 +11,9 @@ import {
   InformationCircleIcon
 } from '@heroicons/react/24/outline';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import AIEnhancementPanel from '@/components/ai/AIEnhancementPanel';
+import AISuggestionTooltip from '@/components/ai/AISuggestionTooltip';
+import FeasibilityScoreDisplay from '@/components/ai/FeasibilityScoreDisplay';
 import toast from 'react-hot-toast';
 
 const createIdeaSchema = z.object({
@@ -49,12 +51,12 @@ type CreateIdeaFormData = z.infer<typeof createIdeaSchema>;
 
 const CreateIdeaPage = () => {
   const navigate = useNavigate();
-  const [isAiEnhancing, setIsAiEnhancing] = useState(false);
 
   const {
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors },
   } = useForm<CreateIdeaFormData>({
     resolver: zodResolver(createIdeaSchema),
@@ -63,9 +65,6 @@ const CreateIdeaPage = () => {
       difficulty: 'BEGINNER',
     },
   });
-
-  const description = watch('description');
-  const title = watch('title');
 
   const createMutation = useMutation({
     mutationFn: (data: CreateIdeaFormData) => {
@@ -88,24 +87,6 @@ const CreateIdeaPage = () => {
 
   const onSubmit = (data: CreateIdeaFormData) => {
     createMutation.mutate(data);
-  };
-
-  const handleAiEnhance = async () => {
-    if (!title || !description) {
-      toast.error('Please add a title and description first');
-      return;
-    }
-
-    setIsAiEnhancing(true);
-    try {
-      // This would call the AI enhancement API
-      // For now, we'll just show a placeholder
-      toast.success('AI enhancement feature coming soon!');
-    } catch (error) {
-      toast.error('AI enhancement failed');
-    } finally {
-      setIsAiEnhancing(false);
-    }
   };
 
   const categories = [
@@ -208,25 +189,23 @@ const CreateIdeaPage = () => {
                   <span className="text-white font-bold text-sm">2</span>
                 </div>
                 <h2 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">Describe Your Vision</h2>
-                <button
-                  type="button"
-                  onClick={handleAiEnhance}
-                  disabled={isAiEnhancing || !watch('description')}
-                  className="ml-auto btn btn-outline btn-sm flex items-center gap-2"
-                >
-                  {isAiEnhancing ? (
-                    <LoadingSpinner size="sm" />
-                  ) : (
-                    <SparklesIcon className="w-4 h-4" />
-                  )}
-                  AI Enhance
-                </button>
               </div>
               
               <div className="form-group">
-                <label htmlFor="description" className="label">
-                  Description <span className="text-error-500">*</span>
-                </label>
+                <div className="flex items-center justify-between mb-2">
+                  <label htmlFor="description" className="label">
+                    Description <span className="text-error-500">*</span>
+                  </label>
+                  <AISuggestionTooltip
+                    title={watch('title') || ''}
+                    description={watch('description') || ''}
+                    onSuggestionSelect={(suggestion) => {
+                      const currentDesc = watch('description') || '';
+                      const newDesc = currentDesc ? `${currentDesc}\n\n${suggestion}` : suggestion;
+                      setValue('description', newDesc);
+                    }}
+                  />
+                </div>
                 <textarea
                   {...register('description')}
                   id="description"
@@ -246,6 +225,16 @@ const CreateIdeaPage = () => {
                   </span>
                 </div>
               </div>
+
+              {/* Feasibility Score Display */}
+              {watch('title') && watch('description') && watch('description').length > 50 && (
+                <FeasibilityScoreDisplay
+                  title={watch('title')}
+                  description={watch('description')}
+                  category={watch('category')}
+                  className="mt-4"
+                />
+              )}
             </div>
 
             {/* Category and Status Section */}
@@ -367,6 +356,42 @@ const CreateIdeaPage = () => {
                 </div>
               </div>
             </div>
+
+
+
+            {/* AI Enhancement Panel */}
+            {watch('title') && watch('description') && watch('description').length > 50 && (
+              <div className="space-y-6">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+                    <SparklesIcon className="w-4 h-4 text-white" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">AI-Powered Insights</h2>
+                </div>
+                
+                <AIEnhancementPanel
+                  title={watch('title')}
+                  description={watch('description')}
+                  category={watch('category')}
+                  tags={watch('tags') ? watch('tags')!.split(',').map(t => t.trim()).filter(Boolean) : []}
+                  onSuggestionsApplied={(suggestions) => {
+                    if (suggestions.tags) {
+                      const currentTags = watch('tags') || '';
+                      const newTags = suggestions.tags.join(', ');
+                      setValue('tags', currentTags ? `${currentTags}, ${newTags}` : newTags);
+                    }
+                    if (suggestions.description) {
+                      setValue('description', suggestions.description);
+                    }
+                    if (suggestions.techStack) {
+                      const currentTechStack = watch('techStack') || '';
+                      const newTechStack = suggestions.techStack.join(', ');
+                      setValue('techStack', currentTechStack ? `${currentTechStack}, ${newTechStack}` : newTechStack);
+                    }
+                  }}
+                />
+              </div>
+            )}
 
             {/* Enhanced Submit Section */}
             <div className="pt-8 border-t border-neutral-200 dark:border-neutral-800">

@@ -67,18 +67,18 @@ const DashboardPage = () => {
   return (
     <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 transition-colors duration-300">
       {/* Enhanced Hero Section */}
-      <div className="relative bg-gradient-to-br from-primary-600 via-primary-700 to-accent-600 dark:from-primary-800 dark:via-primary-900 dark:to-accent-800 overflow-hidden">
-        <div className="absolute inset-0 bg-grid opacity-10"></div>
-        <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 dark:bg-white/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-white/5 dark:bg-white/10 rounded-full blur-3xl"></div>
+      <div className="relative bg-neutral-100/50 dark:bg-neutral-900/50 overflow-hidden">
+        <div className="absolute inset-0 bg-grid opacity-10 dark:opacity-5"></div>
+        <div className="absolute top-0 right-0 w-96 h-96 bg-neutral-200/20 dark:bg-neutral-800/20 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-neutral-200/20 dark:bg-neutral-800/20 rounded-full blur-3xl"></div>
         
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-4xl font-bold text-white mb-2 tracking-tight">
-                Welcome back, <span className="text-accent-200">{user?.username}</span>!
+              <h1 className="text-4xl font-bold text-neutral-900 dark:text-white mb-2 tracking-tight">
+                Welcome back, <span className="text-primary-600 dark:text-primary-400">{user?.username}</span>!
               </h1>
-              <p className="text-primary-100 text-lg">
+              <p className="text-neutral-600 dark:text-neutral-300 text-lg">
                 Here's what's happening with your ideas and projects.
               </p>
             </div>
