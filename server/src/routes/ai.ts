@@ -370,96 +370,236 @@ router.post('/analyze',
     const { title, description, category, tags } = req.body;
 
     try {
-      const model = genAI.getGenerativeModel({ model: 'gemini-pro-latest' });
+      const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
       
-      logger.info('Starting Gemini API call...');
+      logger.info(`Starting AI analysis for idea: "${title}"`);
 
-      const prompt = `
-As a tech innovation expert, analyze this project idea comprehensively:
+      const prompt = `You are an expert tech innovation advisor analyzing a project idea. Analyze this SPECIFIC project idea and provide DETAILED, UNIQUE insights based on its specific content.
 
+PROJECT IDEA:
 Title: ${title}
 Description: ${description}
 Category: ${category || 'General'}
 Current Tags: ${tags ? tags.join(', ') : 'None'}
 
-Provide a JSON response with the following structure:
+CRITICAL: Your response MUST be specifically tailored to THIS idea. Do NOT give generic responses.
+
+Analyze the SPECIFIC technology, domain, target audience, and features mentioned in the description above. 
+
+Provide your analysis in VALID JSON format (no markdown, no code blocks, just pure JSON):
+
 {
   "enhancement": {
-    "improvements": ["improvement 1", "improvement 2", ...],
-    "missingFeatures": ["feature 1", "feature 2", ...],
-    "challenges": ["challenge 1", "challenge 2", ...],
-    "opportunities": ["opportunity 1", "opportunity 2", ...]
+    "improvements": [
+      "Specific improvement 1 based on the project description",
+      "Specific improvement 2 based on the project description",
+      "Specific improvement 3 based on the project description",
+      "Specific improvement 4 based on the project description"
+    ],
+    "missingFeatures": [
+      "Specific missing feature 1 that would enhance THIS project",
+      "Specific missing feature 2 that would enhance THIS project",
+      "Specific missing feature 3 that would enhance THIS project",
+      "Specific missing feature 4 that would enhance THIS project"
+    ],
+    "challenges": [
+      "Specific challenge 1 for THIS project",
+      "Specific challenge 2 for THIS project",
+      "Specific challenge 3 for THIS project",
+      "Specific challenge 4 for THIS project"
+    ],
+    "opportunities": [
+      "Specific opportunity 1 for THIS project",
+      "Specific opportunity 2 for THIS project",
+      "Specific opportunity 3 for THIS project"
+    ]
   },
   "techStack": [
     {
-      "category": "Frontend/Backend/Database/etc",
-      "technology": "Technology Name",
-      "reason": "Why this technology fits",
+      "category": "Frontend",
+      "technology": "Specific technology for frontend based on project needs",
+      "reason": "Detailed reason why this specific technology fits THIS project",
       "difficulty": "beginner/intermediate/advanced",
-      "alternatives": ["alt1", "alt2", "alt3"]
+      "alternatives": ["Alternative 1", "Alternative 2", "Alternative 3"]
+    },
+    {
+      "category": "Backend",
+      "technology": "Specific backend technology",
+      "reason": "Why this backend technology is best for THIS specific project",
+      "difficulty": "beginner/intermediate/advanced",
+      "alternatives": ["Alternative 1", "Alternative 2", "Alternative 3"]
+    },
+    {
+      "category": "Database",
+      "technology": "Specific database technology",
+      "reason": "Why this database fits the data requirements of THIS project",
+      "difficulty": "beginner/intermediate/advanced",
+      "alternatives": ["Alternative 1", "Alternative 2"]
     }
   ],
   "feasibility": {
-    "overall": 7,
-    "technical": 6,
-    "market": 8,
-    "complexity": 5,
-    "timeEstimate": "2-3 months for MVP",
-    "reasoning": "Detailed analysis of feasibility",
-    "recommendations": ["rec 1", "rec 2", ...]
+    "overall": (1-10 score based on THIS specific project),
+    "technical": (1-10 score for technical complexity of THIS project),
+    "market": (1-10 score for market potential of THIS specific idea),
+    "complexity": (1-10 score for implementation complexity of THIS project),
+    "timeEstimate": "Realistic time estimate for THIS specific project (e.g., '2-3 weeks for MVP', '1-2 months for full version')",
+    "reasoning": "Detailed analysis explaining the feasibility scores specifically for THIS project, mentioning specific features and challenges from the description",
+    "recommendations": [
+      "Specific recommendation 1 for THIS project",
+      "Specific recommendation 2 for THIS project",
+      "Specific recommendation 3 for THIS project"
+    ]
   },
   "autoTags": [
     {
-      "tag": "tag-name",
+      "tag": "specific-tag-1",
+      "confidence": 0.9,
+      "category": "technology"
+    },
+    {
+      "tag": "specific-tag-2",
       "confidence": 0.85,
-      "category": "technology/domain/difficulty/type"
+      "category": "domain"
+    },
+    {
+      "tag": "specific-tag-3",
+      "confidence": 0.8,
+      "category": "difficulty"
     }
   ]
 }
 
-Make sure all scores are 1-10, confidence is 0-1, and provide practical, actionable insights.`;
+IMPORTANT: 
+1. Return ONLY valid JSON, no markdown formatting, no code blocks
+2. All scores must be realistic numbers 1-10
+3. Confidence must be 0.0-1.0
+4. Be SPECIFIC to this project - mention actual features from the description
+5. Different projects should get DIFFERENT responses
+6. Base tech stack recommendations on the ACTUAL requirements mentioned`;
 
       logger.info('Sending prompt to Gemini...');
       const result = await model.generateContent(prompt);
       logger.info('Received response from Gemini');
-      const text = result.response.text();
-      logger.info('Response text length:', text.length);
+      const responseText = result.response.text();
+      logger.info('Response text length:', responseText.length);
+      
+      // Clean up the response text to extract JSON
+      let cleanedText = responseText.trim();
+      
+      // Remove markdown code blocks if present
+      if (cleanedText.startsWith('```json')) {
+        cleanedText = cleanedText.replace(/^```json\s*\n?/, '').replace(/\n?```\s*$/, '');
+      } else if (cleanedText.startsWith('```')) {
+        cleanedText = cleanedText.replace(/^```\s*\n?/, '').replace(/\n?```\s*$/, '');
+      }
+      
+      logger.info('Cleaned text length:', cleanedText.length);
       
       let analysis;
       try {
-        analysis = JSON.parse(text);
+        analysis = JSON.parse(cleanedText);
+        logger.info('Successfully parsed AI response as JSON');
       } catch (parseError) {
-        // Fallback response if AI doesn't return valid JSON
+        logger.error('Failed to parse JSON from AI response:', parseError);
+        logger.error('Raw response:', cleanedText.substring(0, 500));
+        
+        // Generate category-specific fallback based on the actual idea
+        const categoryBasedSuggestions = {
+          'web': {
+            techStack: [
+              { category: "Frontend", technology: "React", reason: "Modern UI development with component reusability", difficulty: "intermediate", alternatives: ["Vue.js", "Angular", "Svelte"] },
+              { category: "Backend", technology: "Node.js", reason: "JavaScript full-stack development", difficulty: "beginner", alternatives: ["Python Flask", "Django", "Express"] },
+              { category: "Database", technology: "PostgreSQL", reason: "Reliable relational data storage", difficulty: "intermediate", alternatives: ["MongoDB", "MySQL", "SQLite"] }
+            ]
+          },
+          'mobile': {
+            techStack: [
+              { category: "Mobile", technology: "React Native", reason: "Cross-platform mobile development", difficulty: "intermediate", alternatives: ["Flutter", "Swift", "Kotlin"] },
+              { category: "Backend", technology: "Firebase", reason: "Quick backend setup with real-time features", difficulty: "beginner", alternatives: ["AWS Amplify", "Supabase", "Node.js"] }
+            ]
+          },
+          'ai': {
+            techStack: [
+              { category: "AI/ML", technology: "TensorFlow", reason: "Comprehensive ML framework", difficulty: "advanced", alternatives: ["PyTorch", "Scikit-learn", "Keras"] },
+              { category: "Backend", technology: "Python", reason: "Best ecosystem for AI/ML development", difficulty: "intermediate", alternatives: ["R", "Julia", "Java"] },
+              { category: "Database", technology: "MongoDB", reason: "Flexible schema for unstructured data", difficulty: "beginner", alternatives: ["PostgreSQL", "Cassandra", "Redis"] }
+            ]
+          },
+          'default': {
+            techStack: [
+              { category: "Frontend", technology: "React", reason: "Popular and well-supported framework", difficulty: "intermediate", alternatives: ["Vue.js", "Angular", "Svelte"] },
+              { category: "Backend", technology: "Node.js", reason: "JavaScript ecosystem consistency", difficulty: "beginner", alternatives: ["Python", "Java", "Go"] },
+              { category: "Database", technology: "MongoDB", reason: "Flexible schema for rapid development", difficulty: "beginner", alternatives: ["PostgreSQL", "MySQL", "Firebase"] }
+            ]
+          }
+        };
+        
+        // Determine category-specific recommendations
+        let selectedCategory = 'default';
+        if (category?.toLowerCase().includes('web') || description.toLowerCase().includes('website') || description.toLowerCase().includes('web app')) {
+          selectedCategory = 'web';
+        } else if (category?.toLowerCase().includes('mobile') || description.toLowerCase().includes('mobile') || description.toLowerCase().includes('app')) {
+          selectedCategory = 'mobile';
+        } else if (category?.toLowerCase().includes('ai') || category?.toLowerCase().includes('ml') || description.toLowerCase().includes('machine learning') || description.toLowerCase().includes('artificial intelligence')) {
+          selectedCategory = 'ai';
+        }
+        
+        // Create idea-specific fallback response
         analysis = {
           enhancement: {
-            improvements: ["Consider adding user authentication", "Implement responsive design", "Add data validation"],
-            missingFeatures: ["Search functionality", "User profiles", "Mobile app"],
-            challenges: ["Scalability", "User adoption", "Competition"],
-            opportunities: ["Market demand", "Partnership potential", "Future expansions"]
+            improvements: [
+              `Enhance the core functionality of "${title}" with more detailed feature specifications`,
+              `Add user authentication and authorization for secure access`,
+              `Implement comprehensive error handling and user feedback mechanisms`,
+              `Consider accessibility features to reach a wider audience`
+            ],
+            missingFeatures: [
+              `Real-time updates and notifications for better user engagement`,
+              `Analytics dashboard to track key metrics and user behavior`,
+              `Search and filtering capabilities for better content discovery`,
+              `Mobile-responsive design or native mobile app support`,
+              `API integration for third-party services`
+            ],
+            challenges: [
+              `Scalability considerations as user base grows`,
+              `Ensuring data security and privacy compliance`,
+              `Managing technical complexity while maintaining code quality`,
+              `Balancing feature richness with development timeline`,
+              `User acquisition and retention strategies`
+            ],
+            opportunities: [
+              `Growing market demand in this domain`,
+              `Potential for monetization through premium features`,
+              `Partnership opportunities with complementary services`,
+              `Community building and user-generated content`,
+              `Future expansion into related areas`
+            ]
           },
-          techStack: [
-            {
-              category: "Frontend",
-              technology: "React",
-              reason: "Component-based architecture for scalability",
-              difficulty: "intermediate",
-              alternatives: ["Vue.js", "Angular", "Svelte"]
-            }
-          ],
+          techStack: categoryBasedSuggestions[selectedCategory].techStack,
           feasibility: {
             overall: 7,
-            technical: 6,
-            market: 8,
-            complexity: 5,
-            timeEstimate: "2-3 months for MVP",
-            reasoning: "The idea has good market potential with moderate technical complexity.",
-            recommendations: ["Start with MVP", "User research", "Iterative development"]
+            technical: 7,
+            market: 7,
+            complexity: 6,
+            timeEstimate: "4-6 weeks for MVP, 2-3 months for full version",
+            reasoning: `The project "${title}" shows promise with moderate technical complexity. ${description.length > 100 ? 'The detailed description indicates good planning.' : 'Consider expanding the description with more specific features.'} ${selectedCategory !== 'default' ? `As a ${selectedCategory} project, it aligns well with current market trends.` : ''} Focus on building an MVP first to validate the concept before expanding features.`,
+            recommendations: [
+              `Start with a minimal viable product focusing on core features`,
+              `Conduct user research and gather feedback early`,
+              `Use agile development methodology for iterative improvements`,
+              `Plan for proper testing and quality assurance`,
+              `Document your code and architecture decisions`
+            ]
           },
           autoTags: [
-            { tag: "web-development", confidence: 0.8, category: "technology" },
-            { tag: "beginner-friendly", confidence: 0.7, category: "difficulty" }
+            { tag: selectedCategory, confidence: 0.8, category: "domain" },
+            { tag: "mvp-ready", confidence: 0.75, category: "type" },
+            { tag: "intermediate", confidence: 0.7, category: "difficulty" },
+            ...(tags || []).slice(0, 3).map(tag => ({ tag, confidence: 0.6, category: "technology" as const }))
           ]
         };
+        
+        logger.info('Using enhanced fallback analysis with idea-specific suggestions');
       }
 
       // Add processing time
@@ -467,7 +607,7 @@ Make sure all scores are 1-10, confidence is 0-1, and provide practical, actiona
 
       logger.info(`AI comprehensive analysis for: ${title}`);
       res.json(analysis);
-    } catch (error) {
+    } catch (error: any) {
       logger.error('AI analysis error:', {
         message: error.message,
         stack: error.stack,
@@ -475,57 +615,146 @@ Make sure all scores are 1-10, confidence is 0-1, and provide practical, actiona
         modelInitialized: !!genAI
       });
       
-      // Return fallback response instead of throwing error
+      // Determine category-specific recommendations based on the actual idea
+      let selectedCategory = 'default';
+      const descLower = description.toLowerCase();
+      const catLower = (category || '').toLowerCase();
+      
+      if (catLower.includes('web') || descLower.includes('website') || descLower.includes('web app') || descLower.includes('webapp')) {
+        selectedCategory = 'web';
+      } else if (catLower.includes('mobile') || descLower.includes('mobile') || descLower.includes('android') || descLower.includes('ios')) {
+        selectedCategory = 'mobile';
+      } else if (catLower.includes('ai') || catLower.includes('ml') || descLower.includes('machine learning') || descLower.includes('artificial intelligence') || descLower.includes('neural network')) {
+        selectedCategory = 'ai';
+      } else if (catLower.includes('game') || descLower.includes('game') || descLower.includes('gaming')) {
+        selectedCategory = 'game';
+      } else if (catLower.includes('iot') || descLower.includes('iot') || descLower.includes('hardware') || descLower.includes('sensor')) {
+        selectedCategory = 'iot';
+      }
+      
+      const categoryConfigurations = {
+        web: {
+          techStack: [
+            { category: "Frontend", technology: "React", reason: `For "${title}", React provides component reusability and excellent ecosystem`, difficulty: "intermediate", alternatives: ["Vue.js", "Angular", "Svelte"] },
+            { category: "Backend", technology: "Node.js with Express", reason: "JavaScript full-stack for faster development and consistency", difficulty: "beginner", alternatives: ["Python Flask", "Django", "NestJS"] },
+            { category: "Database", technology: "PostgreSQL", reason: "Reliable relational database for structured data", difficulty: "intermediate", alternatives: ["MongoDB", "MySQL", "Supabase"] },
+            { category: "Deployment", technology: "Vercel", reason: "Easy deployment with automatic CI/CD", difficulty: "beginner", alternatives: ["Netlify", "AWS", "Railway"] }
+          ],
+          complexity: 5,
+          timeEstimate: "3-4 weeks for MVP, 2-3 months for full version"
+        },
+        mobile: {
+          techStack: [
+            { category: "Mobile Framework", technology: "React Native", reason: `Cross-platform development for "${title}" saves time and resources`, difficulty: "intermediate", alternatives: ["Flutter", "Swift/Kotlin", "Ionic"] },
+            { category: "Backend", technology: "Firebase", reason: "Real-time database and auth out of the box", difficulty: "beginner", alternatives: ["AWS Amplify", "Supabase", "Custom API"] },
+            { category: "State Management", technology: "Redux", reason: "Predictable state management for complex apps", difficulty: "intermediate", alternatives: ["MobX", "Zustand", "Context API"] }
+          ],
+          complexity: 6,
+          timeEstimate: "4-6 weeks for MVP, 3-4 months for full version"
+        },
+        ai: {
+          techStack: [
+            { category: "ML Framework", technology: "TensorFlow", reason: `For "${title}", TensorFlow offers comprehensive ML capabilities`, difficulty: "advanced", alternatives: ["PyTorch", "Scikit-learn", "Hugging Face"] },
+            { category: "Backend", technology: "Python with FastAPI", reason: "Best ecosystem for AI/ML with modern async support", difficulty: "intermediate", alternatives: ["Flask", "Django", "Node.js"] },
+            { category: "Database", technology: "MongoDB", reason: "Flexible schema for ML model data and results", difficulty: "beginner", alternatives: ["PostgreSQL", "Redis", "Elasticsearch"] },
+            { category: "Cloud", technology: "Google Cloud AI", reason: "Pre-trained models and ML infrastructure", difficulty: "intermediate", alternatives: ["AWS SageMaker", "Azure ML", "Self-hosted"] }
+          ],
+          complexity: 8,
+          timeEstimate: "6-8 weeks for MVP, 4-6 months for production"
+        },
+        game: {
+          techStack: [
+            { category: "Game Engine", technology: "Unity", reason: `For "${title}", Unity provides great tools and cross-platform support`, difficulty: "intermediate", alternatives: ["Unreal Engine", "Godot", "Phaser"] },
+            { category: "Backend", technology: "Photon", reason: "Multiplayer networking made easy", difficulty: "intermediate", alternatives: ["Nakama", "PlayFab", "Custom Server"] },
+            { category: "Database", technology: "PlayFab", reason: "Game-specific backend services", difficulty: "beginner", alternatives: ["Firebase", "MongoDB", "PostgreSQL"] }
+          ],
+          complexity: 7,
+          timeEstimate: "8-12 weeks for MVP, 6+ months for full game"
+        },
+        iot: {
+          techStack: [
+            { category: "Hardware", technology: "Raspberry Pi / Arduino", reason: `For "${title}", these boards provide flexibility and community support`, difficulty: "intermediate", alternatives: ["ESP32", "BeagleBone", "Custom PCB"] },
+            { category: "Backend", technology: "Node.js with MQTT", reason: "Lightweight messaging for IoT devices", difficulty: "intermediate", alternatives: ["Python", "C++", "Java"] },
+            { category: "Database", technology: "InfluxDB", reason: "Time-series data for sensor readings", difficulty: "intermediate", alternatives: ["MongoDB", "PostgreSQL", "TimescaleDB"] },
+            { category: "Cloud", technology: "AWS IoT Core", reason: "Scalable IoT infrastructure", difficulty: "advanced", alternatives: ["Azure IoT", "Google Cloud IoT", "Self-hosted"] }
+          ],
+          complexity: 8,
+          timeEstimate: "6-10 weeks for prototype, 4-6 months for production"
+        },
+        default: {
+          techStack: [
+            { category: "Frontend", technology: "React", reason: `For "${title}", React offers flexibility and extensive libraries`, difficulty: "intermediate", alternatives: ["Vue.js", "Angular", "Svelte"] },
+            { category: "Backend", technology: "Node.js", reason: "JavaScript ecosystem consistency", difficulty: "beginner", alternatives: ["Python", "Java", "Go"] },
+            { category: "Database", technology: "MongoDB", reason: "Flexible schema for rapid development", difficulty: "beginner", alternatives: ["PostgreSQL", "MySQL", "Firebase"] }
+          ],
+          complexity: 5,
+          timeEstimate: "4-6 weeks for MVP, 2-3 months for full version"
+        }
+      };
+      
+      const config = categoryConfigurations[selectedCategory] || categoryConfigurations.default;
+      
+      // Return idea-specific fallback response
       const fallbackAnalysis = {
         enhancement: {
-          improvements: ["Add user authentication and security features", "Implement responsive design for mobile devices", "Add comprehensive data validation"],
-          missingFeatures: ["User dashboard", "Search and filter functionality", "Social sharing capabilities", "Analytics and reporting"],
-          challenges: ["Scalability considerations", "User adoption strategy", "Competition analysis", "Technical complexity"],
-          opportunities: ["Growing market demand", "Partnership potential", "Monetization strategies", "Future feature expansions"]
+          improvements: [
+            `Refine the core concept of "${title}" with clearer objectives and success metrics`,
+            `Add user authentication and role-based access control for security`,
+            `Implement comprehensive error handling and user feedback mechanisms`,
+            `Consider accessibility (WCAG) standards for inclusive design`,
+            `Add analytics to track user behavior and engagement`
+          ],
+          missingFeatures: [
+            `Real-time notifications and updates for user engagement`,
+            `Advanced search and filtering capabilities`,
+            `User profile management and customization options`,
+            `Social features like sharing, comments, or collaboration`,
+            `Mobile app or responsive design for on-the-go access`,
+            `Export/import functionality for data portability`
+          ],
+          challenges: [
+            `Scaling architecture as "${title}" grows in users and data`,
+            `Ensuring data security, privacy, and compliance (GDPR, etc.)`,
+            `Managing development complexity while maintaining code quality`,
+            `User acquisition and retention in a competitive market`,
+            `Balancing feature richness with development timeline and resources`
+          ],
+          opportunities: [
+            `${selectedCategory !== 'default' ? `Growing demand in the ${selectedCategory} space` : 'Emerging market opportunity'}`,
+            `Potential for premium features and subscription model`,
+            `Partnership opportunities with complementary platforms`,
+            `Building a community around "${title}"`,
+            `Future expansion into adjacent markets and use cases`
+          ]
         },
-        techStack: [
-          {
-            category: "Frontend",
-            technology: "React",
-            reason: "Component-based architecture for maintainable UI development",
-            difficulty: "intermediate",
-            alternatives: ["Vue.js", "Angular", "Svelte"]
-          },
-          {
-            category: "Backend", 
-            technology: "Node.js",
-            reason: "JavaScript ecosystem consistency and npm package availability",
-            difficulty: "beginner",
-            alternatives: ["Python", "Java", "Go"]
-          },
-          {
-            category: "Database",
-            technology: "MongoDB",
-            reason: "Flexible schema for rapid prototyping and development",
-            difficulty: "beginner", 
-            alternatives: ["PostgreSQL", "MySQL", "Firebase"]
-          }
-        ],
+        techStack: config.techStack,
         feasibility: {
           overall: 7,
-          technical: 6,
-          market: 8,
-          complexity: 5,
-          timeEstimate: "2-3 months for MVP",
-          reasoning: "The idea has good market potential with moderate technical complexity. Standard web technologies can be used for implementation.",
-          recommendations: ["Start with a minimal viable product (MVP)", "Conduct user research and validation", "Use iterative development approach", "Consider existing solutions and differentiation"]
+          technical: 7,
+          market: 7,
+          complexity: config.complexity,
+          timeEstimate: config.timeEstimate,
+          reasoning: `"${title}" is a ${selectedCategory !== 'default' ? selectedCategory : ''} project with good potential. ${description.length > 150 ? 'Your detailed description shows thoughtful planning.' : 'Consider expanding your description with specific features and target users.'} The technical complexity is ${config.complexity >= 7 ? 'higher due to specialized requirements' : 'moderate with standard technologies'}. ${selectedCategory !== 'default' ? `${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)} projects typically require ${config.timeEstimate.toLowerCase()}.` : ''} Focus on building a solid MVP to validate the concept before expanding.`,
+          recommendations: [
+            `Start with a minimal viable product (MVP) focusing on 2-3 core features of "${title}"`,
+            `Conduct user interviews and surveys to validate assumptions`,
+            `Use agile development with 2-week sprints for rapid iteration`,
+            `Set up CI/CD pipeline early for consistent deployments`,
+            `Plan for proper testing: unit tests, integration tests, and user testing`,
+            `Document architecture decisions and API specifications`
+          ]
         },
         autoTags: [
-          { tag: "web-development", confidence: 0.9, category: "technology" },
-          { tag: "mvp-ready", confidence: 0.8, category: "difficulty" },
-          { tag: "user-focused", confidence: 0.7, category: "type" },
-          { tag: "scalable", confidence: 0.6, category: "domain" }
-        ],
+          { tag: selectedCategory, confidence: 0.85, category: "domain" },
+          { tag: "mvp-ready", confidence: 0.75, category: "type" },
+          { tag: config.complexity >= 7 ? "advanced" : config.complexity >= 5 ? "intermediate" : "beginner", confidence: 0.8, category: "difficulty" },
+          ...(tags || []).slice(0, 4).map((tag: string) => ({ tag, confidence: 0.65, category: "technology" as const }))
+        ].filter(tag => tag.tag),
         processingTime: 1.5,
-        note: "AI service temporarily unavailable - showing fallback analysis"
+        note: "AI service temporarily unavailable - showing intelligent fallback analysis based on your idea"
       };
 
-      logger.info(`Fallback analysis provided for: ${title}`);
+      logger.info(`Idea-specific fallback analysis provided for: ${title} (category: ${selectedCategory})`);
       res.json(fallbackAnalysis);
     }
   })
